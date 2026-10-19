@@ -58,28 +58,46 @@ export type SearchMovie = {
   vote_count: number
 }
 
-/** TMDB movie search hit (list endpoint). */
-export type SearchMovieResult = {
+type SearchResultBase = {
   adult: boolean
   backdrop_path: string | null
   genre_ids: number[]
   id: number
   original_language: string
-  original_title: string
   overview: string
   popularity: number
   poster_path: string | null
-  release_date: string
   softcore: boolean
-  title: string
-  video: boolean
   vote_average: number
   vote_count: number
 }
 
-export type SearchMoviesResponse = {
+/** TMDB multi-search movie hit (`GET /search`). */
+export type SearchMovieResult = SearchResultBase & {
+  media_type: 'movie'
+  original_title: string
+  release_date: string
+  title: string
+  video: boolean
+}
+
+/** TMDB multi-search TV hit (`GET /search`). */
+export type SearchTvResult = SearchResultBase & {
+  media_type: 'tv'
+  first_air_date: string
+  name: string
+  original_name: string
+  origin_country?: string[]
+}
+
+export type SearchMediaResult = SearchMovieResult | SearchTvResult
+
+export type SearchResponse = {
   page: number
-  results: SearchMovieResult[]
+  results: SearchMediaResult[]
   total_pages?: number
   total_results?: number
 }
+
+/** @deprecated Use SearchResponse */
+export type SearchMoviesResponse = SearchResponse
