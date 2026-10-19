@@ -1,5 +1,11 @@
 import { isAppShellPath, isStaticAssetPath } from './routes'
-import { DEFAULT_API_ORIGIN, fetchMovieMeta, injectMovieMeta } from './meta'
+import {
+  DEFAULT_API_ORIGIN,
+  fetchMovieMeta,
+  fetchTvMeta,
+  injectMovieMeta,
+  injectTvMeta,
+} from './meta'
 
 export interface Env {
   ASSETS: Fetcher
@@ -20,6 +26,11 @@ const isHtmlResponse = (response: Response) => {
 
 const movieIdFromPath = (pathname: string) => {
   const match = pathname.match(/^\/movies\/(\d+)$/)
+  return match?.[1] ?? null
+}
+
+const tvIdFromPath = (pathname: string) => {
+  const match = pathname.match(/^\/tv\/(\d+)$/)
   return match?.[1] ?? null
 }
 
@@ -63,6 +74,18 @@ export default {
         return injectMovieMeta(shell, movie)
       }
       // Timeouts and 5xx keep a 200 SPA shell so the client can retry.
+      return shell
+    }
+
+    const tvId = tvIdFromPath(pathname)
+    if (tvId) {
+      const show = await fetchTvMeta(tvId, env.API_ORIGIN ?? DEFAULT_API_ORIGIN)
+      if (show === 'not_found') {
+        return notFoundShell(shell)
+      }
+      if (show) {
+        return injectTvMeta(shell, show)
+      }
       return shell
     }
 

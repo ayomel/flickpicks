@@ -168,10 +168,10 @@ describe('worker fetch handler', () => {
     vi.unstubAllGlobals()
   })
 
-  it('returns 200 shell for / and numeric movie routes', async () => {
+  it('returns 200 shell for / and numeric movie and tv routes', async () => {
     const env = envWith(files)
 
-    for (const path of ['/', '/movies/123']) {
+    for (const path of ['/', '/movies/123', '/tv/1396']) {
       const response = await handle(path, env)
       expect(response.status).toBe(200)
       expect(await response.text()).toContain('id="root"')
@@ -207,6 +207,33 @@ describe('worker fetch handler', () => {
 
     const missingPng = await handle('/assets/missing.png', env)
     expect(missingPng.status).toBe(404)
+  })
+
+  it('injects escaped tv meta once for /tv/:id when the API succeeds', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          id: 1396,
+          name: 'Breaking Bad & Co',
+          overview: 'A <teacher> cooks.',
+          backdrop_path: '/bb.jpg',
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } },
+      ),
+    )
+    vi.stubGlobal('fetch', fetchMock)
+
+    const response = await handle('/tv/1396', envWith(files))
+    const html = await response.text()
+
+    expect(response.status).toBe(200)
+    expect(html).toContain('<title>Breaking Bad &amp; Co · FlickPick</title>')
+    expect(html).toContain(
+      'name="description" content="A &lt;teacher&gt; cooks."',
+    )
+    expect(html).toContain('property="og:type" content="video.tv_show"')
+    expect(html).toContain('https://flickpick.mel-2cb.workers.dev/tv/1396')
+    expect(fetchMock).toHaveBeenCalled()
   })
 
   it('injects escaped movie meta once for /movies/:id when the API succeeds', async () => {
