@@ -100,7 +100,7 @@ export const MobileTabBar = () => {
           aria-label="Search movies"
           className="pointer-events-auto border-t border-border/80 bg-background/96 px-4 py-3 backdrop-blur-md"
         >
-          <MovieSearch autoFocus placement="top" />
+          <MovieSearch />
         </div>
       ) : null}
 
