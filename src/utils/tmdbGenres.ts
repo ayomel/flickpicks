@@ -51,9 +51,47 @@ export const getMovieGenreName = (genreId: number) => {
   return TMDB_MOVIE_GENRES[genreId] ?? null
 }
 
+const TMDB_TV_GENRES: Record<number, string> = {
+  10759: 'Action & Adventure',
+  16: 'Animation',
+  35: 'Comedy',
+  80: 'Crime',
+  99: 'Documentary',
+  18: 'Drama',
+  10751: 'Family',
+  10762: 'Kids',
+  9648: 'Mystery',
+  10763: 'News',
+  10764: 'Reality',
+  10765: 'Sci-Fi & Fantasy',
+  10766: 'Soap',
+  10767: 'Talk',
+  10768: 'War & Politics',
+  37: 'Western',
+}
+
+export const getTvGenreName = (genreId: number) => {
+  return TMDB_TV_GENRES[genreId] ?? getMovieGenreName(genreId)
+}
+
 export const formatGenreLabels = (genreIds: number[], limit = 2) => {
   const names = genreIds
     .map((id) => getMovieGenreName(id))
+    .filter((name): name is string => Boolean(name))
+    .slice(0, limit)
+
+  return names.join(' · ')
+}
+
+export const formatSearchGenreLabels = (
+  mediaType: 'movie' | 'tv',
+  genreIds: number[],
+  limit = 2,
+) => {
+  const names = genreIds
+    .map((id) =>
+      mediaType === 'movie' ? getMovieGenreName(id) : getTvGenreName(id),
+    )
     .filter((name): name is string => Boolean(name))
     .slice(0, limit)
 

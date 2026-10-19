@@ -30,7 +30,7 @@ const HeroFrame = ({ children }: { children: string }) => {
 
 export const FeatureMovieHero = () => {
   const { data, isLoading, isError } = useTrendingQuery()
-  const movies = data?.results.filter(hasBackdrop) ?? []
+  const movies = (data?.results ?? []).filter(hasBackdrop)
   const {
     index,
     progress,

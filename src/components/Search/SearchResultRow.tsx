@@ -1,28 +1,34 @@
-import { Film } from 'lucide-react'
+import { Film, Tv } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
-import type { SearchMovieResult } from '@/types/search'
+import type { SearchMediaResult } from '@/types/search'
 import { getPosterThumbPath } from '@/utils/getPosterPath'
-import { formatGenreLabels } from '@/utils/tmdbGenres'
-import { formatReleaseYear } from '@/utils/formatMovie'
+import {
+  getSearchResultTitle,
+  getSearchResultYear,
+} from '@/utils/searchResult'
+import { formatSearchGenreLabels } from '@/utils/tmdbGenres'
 
 type SearchResultRowProps = {
-  movie: SearchMovieResult
+  item: SearchMediaResult
   optionId: string
   isActive: boolean
-  onSelect: (id: number) => void
+  onSelect: (item: SearchMediaResult) => void
   onHover: () => void
 }
 
 export const SearchResultRow = ({
-  movie,
+  item,
   optionId,
   isActive,
   onSelect,
   onHover,
 }: SearchResultRowProps) => {
-  const year = formatReleaseYear(movie.release_date)
-  const genres = formatGenreLabels(movie.genre_ids)
-  const meta = [year, genres].filter(Boolean).join(' · ')
+  const title = getSearchResultTitle(item)
+  const year = getSearchResultYear(item)
+  const genres = formatSearchGenreLabels(item.media_type, item.genre_ids)
+  const typeLabel = item.media_type === 'tv' ? 'TV' : 'Movie'
+  const meta = [typeLabel, year, genres].filter(Boolean).join(' · ')
 
   return (
     <button
@@ -31,31 +37,36 @@ export const SearchResultRow = ({
       role="option"
       aria-selected={isActive}
       onMouseEnter={onHover}
-      onClick={() => onSelect(movie.id)}
+      onClick={() => onSelect(item)}
       className={cn(
         'flex w-full items-center gap-3 border-b border-border/60 px-3 py-2.5 text-left transition-colors last:border-b-0',
         isActive ? 'bg-muted' : 'hover:bg-muted/70',
       )}
     >
       <div className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border bg-muted">
-        {movie.poster_path ? (
+        {item.poster_path ? (
           <img
-            src={getPosterThumbPath(movie.poster_path)}
-            alt={`${movie.title} poster`}
-            width={92}
-            height={138}
-            loading="lazy"
-            decoding="async"
+            src={getPosterThumbPath(item.poster_path)}
+            alt=""
             className="size-full object-cover"
           />
+        ) : item.media_type === 'tv' ? (
+          <Tv className="size-5 text-muted-foreground" aria-hidden />
         ) : (
           <Film className="size-5 text-muted-foreground" aria-hidden />
         )}
       </div>
       <div className="min-w-0 flex-1">
-        <p className="m-0 truncate text-sm font-medium text-foreground">
-          {movie.title}
-        </p>
+        <div className="flex min-w-0 items-center gap-2">
+          <p className="m-0 truncate text-sm font-medium text-foreground">
+            {title}
+          </p>
+          {item.media_type === 'tv' ? (
+            <Badge variant="secondary" className="shrink-0 text-[10px]">
+              TV
+            </Badge>
+          ) : null}
+        </div>
         {meta ? (
           <p className="m-0 truncate font-mono text-xs text-muted-foreground">
             {meta}

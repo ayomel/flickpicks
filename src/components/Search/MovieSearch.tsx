@@ -2,47 +2,46 @@ import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import type { ComponentProps } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
-import { MIN_SEARCH_LENGTH, useSearchQuery } from '@/hooks/useSearchQuery'
 import {
-  SearchDropdown,
-  SearchDropdownMessage,
-  type SearchDropdownPlacement,
-} from './SearchDropdown'
+  MIN_SEARCH_LENGTH,
+  useSearchQuery,
+  type SearchMediaResult,
+} from '@/hooks/useSearchQuery'
+import { getSearchResultKey } from '@/utils/searchResult'
+import { SearchDropdown, SearchDropdownMessage } from './SearchDropdown'
 import { SearchInput } from './SearchInput'
 import { SearchResultRow } from './SearchResultRow'
 
-type MovieSearchProps = {
-  autoFocus?: boolean
-  placement?: SearchDropdownPlacement
-}
+const LISTBOX_ID = 'movie-search-listbox'
 
-export const MovieSearch = ({
-  autoFocus = false,
-  placement = 'bottom',
-}: MovieSearchProps) => {
+export const MovieSearch = () => {
   const navigate = useNavigate()
   const rootRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const instanceId = useId()
-  const listboxId = `movie-search-listbox-${instanceId}`
 
   const [query, setQuery] = useState('')
-  const [open, setOpen] = useState(autoFocus)
+  const [open, setOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
 
   const debouncedQuery = useDebouncedValue(query, 300)
-  const {
-    data: results = [],
-    isLoading,
-    isError,
-  } = useSearchQuery(debouncedQuery)
+  const { data: results = [], isLoading, isError } = useSearchQuery(debouncedQuery)
 
   const trimmedDebounced = debouncedQuery.trim()
-  const showDropdown = open && trimmedDebounced.length >= MIN_SEARCH_LENGTH
+  const showDropdown =
+    open && trimmedDebounced.length >= MIN_SEARCH_LENGTH
 
-  const selectMovie = useCallback(
-    (id: number) => {
-      navigate(`/movies/${id}`)
+  const selectResult = useCallback(
+    (item: SearchMediaResult) => {
+      if (item.media_type === 'movie') {
+        navigate(`/movies/${item.id}`)
+      } else {
+        window.open(
+          `https://www.themoviedb.org/tv/${item.id}`,
+          '_blank',
+          'noopener,noreferrer',
+        )
+      }
       setQuery('')
       setOpen(false)
       setActiveIndex(0)
@@ -50,17 +49,9 @@ export const MovieSearch = ({
     [navigate],
   )
 
-  const resultsKey = results.map((movie) => movie.id).join(',')
-  const [indexedResultsKey, setIndexedResultsKey] = useState(resultsKey)
-  if (resultsKey !== indexedResultsKey) {
-    setIndexedResultsKey(resultsKey)
-    setActiveIndex(0)
-  }
-
   useEffect(() => {
-    if (!autoFocus) return
-    inputRef.current?.focus()
-  }, [autoFocus])
+    setActiveIndex(0)
+  }, [results])
 
   useEffect(() => {
     const handlePointerDown = (event: MouseEvent) => {
@@ -88,9 +79,9 @@ export const MovieSearch = ({
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [])
 
-  const handleInputKeyDown: ComponentProps<typeof SearchInput>['onKeyDown'] = (
-    event,
-  ) => {
+  const handleInputKeyDown: ComponentProps<
+    typeof SearchInput
+  >['onKeyDown'] = (event) => {
     if (event.key === 'Escape') {
       setOpen(false)
       inputRef.current?.blur()
@@ -107,15 +98,15 @@ export const MovieSearch = ({
       setActiveIndex((prev) => Math.max(prev - 1, 0))
     } else if (event.key === 'Enter') {
       event.preventDefault()
-      const movie = results[activeIndex]
-      if (movie) selectMovie(movie.id)
+      const item = results[activeIndex]
+      if (item) selectResult(item)
     }
   }
 
-  const activeOptionId =
-    showDropdown && results[activeIndex]
-      ? `movie-search-option-${instanceId}-${results[activeIndex].id}`
-      : undefined
+  const activeItem = showDropdown ? results[activeIndex] : undefined
+  const activeOptionId = activeItem
+    ? `search-option-${instanceId}-${getSearchResultKey(activeItem)}`
+    : undefined
 
   return (
     <div ref={rootRef} className="relative w-full">
@@ -125,16 +116,12 @@ export const MovieSearch = ({
         onChange={setQuery}
         onFocus={() => setOpen(true)}
         onKeyDown={handleInputKeyDown}
-        listboxId={listboxId}
+        listboxId={LISTBOX_ID}
         isExpanded={showDropdown}
         activeOptionId={activeOptionId}
       />
 
-      <SearchDropdown
-        listboxId={listboxId}
-        isOpen={showDropdown}
-        placement={placement}
-      >
+      <SearchDropdown listboxId={LISTBOX_ID} isOpen={showDropdown}>
         {isLoading ? (
           <SearchDropdownMessage>Searching…</SearchDropdownMessage>
         ) : isError ? (
@@ -142,15 +129,15 @@ export const MovieSearch = ({
             Couldn&apos;t load results. Try again.
           </SearchDropdownMessage>
         ) : results.length === 0 ? (
-          <SearchDropdownMessage>No movies found.</SearchDropdownMessage>
+          <SearchDropdownMessage>No results found.</SearchDropdownMessage>
         ) : (
-          results.map((movie, index) => (
+          results.map((item, index) => (
             <SearchResultRow
-              key={movie.id}
-              movie={movie}
-              optionId={`movie-search-option-${instanceId}-${movie.id}`}
+              key={getSearchResultKey(item)}
+              item={item}
+              optionId={`search-option-${instanceId}-${getSearchResultKey(item)}`}
               isActive={index === activeIndex}
-              onSelect={selectMovie}
+              onSelect={selectResult}
               onHover={() => setActiveIndex(index)}
             />
           ))

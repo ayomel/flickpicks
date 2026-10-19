@@ -36,7 +36,7 @@ export const SearchInput = ({
         onChange={(event) => onChange(event.target.value)}
         onFocus={onFocus}
         onKeyDown={onKeyDown}
-        placeholder="Search movies…"
+        placeholder="Search movies & TV…"
         autoComplete="off"
         role="combobox"
         aria-expanded={isExpanded}
