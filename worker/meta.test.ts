@@ -1,12 +1,16 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   buildMetaTagsHtml,
+  buildTvMetaTagsHtml,
   escapeHtml,
   fetchMovieMeta,
+  fetchTvMeta,
   injectMovieMeta,
   movieCanonicalUrl,
   moviePageTitle,
   SITE_ORIGIN,
+  tvCanonicalUrl,
+  tvPageTitle,
 } from './meta'
 
 describe('escapeHtml', () => {
@@ -94,6 +98,28 @@ describe('movie meta helpers', () => {
   })
 })
 
+describe('tv meta helpers', () => {
+  it('builds title and canonical urls for tv shows', () => {
+    expect(tvPageTitle('Breaking Bad')).toBe('Breaking Bad · FlickPick')
+    expect(tvCanonicalUrl(1396)).toBe(`${SITE_ORIGIN}/tv/1396`)
+  })
+
+  it('builds escaped meta tags for tv crawlers', () => {
+    const html = buildTvMetaTagsHtml({
+      id: 1396,
+      name: 'Breaking Bad & Co',
+      overview: 'A <teacher> cooks.',
+      backdrop_path: '/bb.jpg',
+    })
+
+    expect(html).toContain('Breaking Bad &amp; Co · FlickPick')
+    expect(html).toContain('A &lt;teacher&gt; cooks.')
+    expect(html).toContain(`content="${SITE_ORIGIN}/tv/1396"`)
+    expect(html).toContain('property="og:type" content="video.tv_show"')
+    expect(html).toContain('https://image.tmdb.org/t/p/w780/bb.jpg')
+  })
+})
+
 describe('fetchMovieMeta', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
@@ -115,5 +141,29 @@ describe('fetchMovieMeta', () => {
     )
 
     await expect(fetchMovieMeta('603')).resolves.toBeNull()
+  })
+})
+
+describe('fetchTvMeta', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('returns not_found when the API responds 404', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(new Response('missing', { status: 404 })),
+    )
+
+    await expect(fetchTvMeta('999999')).resolves.toBe('not_found')
+  })
+
+  it('returns null when the API responds 5xx', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(new Response('error', { status: 500 })),
+    )
+
+    await expect(fetchTvMeta('1396')).resolves.toBeNull()
   })
 })

@@ -32,7 +32,7 @@ Production deploys through the Cloudflare dashboard Git integration for the `fli
 - Assets directory: `./dist` (Vite build output)
 - `not_found_handling`: `single-page-application` (same SPA fallback the live Worker uses today)
 
-The Worker script returns HTTP 404 for unknown paths while still serving `index.html`, so the client `NotFound` page can render. Valid `/` and `/movies/:digits` deep links stay on 200.
+The Worker script returns HTTP 404 for unknown paths while still serving `index.html`, so the client `NotFound` page can render. Valid `/`, `/movies/:digits`, and `/tv/:digits` deep links stay on 200.
 
 Optional local packaging check (does not publish):
 
@@ -46,5 +46,6 @@ pnpm deploy:dry
 | ------------- | ----------- | ----------------------------------- |
 | `/`           | 200         | `index.html`                        |
 | `/movies/123` | 200         | `index.html`                        |
+| `/tv/123`     | 200         | `index.html`                        |
 | other paths   | 404         | `index.html` (SPA shell / NotFound) |
 | `/assets/*`   | 200         | hashed static files                 |

@@ -2,10 +2,12 @@ import { describe, expect, it } from 'vitest'
 import { isAppShellPath, isStaticAssetPath } from './routes'
 
 describe('isAppShellPath', () => {
-  it('allows home and numeric movie routes', () => {
+  it('allows home and numeric movie and tv routes', () => {
     expect(isAppShellPath('/')).toBe(true)
     expect(isAppShellPath('/movies/550')).toBe(true)
     expect(isAppShellPath('/movies/0')).toBe(true)
+    expect(isAppShellPath('/tv/1396')).toBe(true)
+    expect(isAppShellPath('/tv/0')).toBe(true)
   })
 
   it('rejects unknown or non-numeric movie paths', () => {
@@ -15,6 +17,9 @@ describe('isAppShellPath', () => {
     expect(isAppShellPath('/movies/abc')).toBe(false)
     expect(isAppShellPath('/movies/55a')).toBe(false)
     expect(isAppShellPath('/movies/550/extra')).toBe(false)
+    expect(isAppShellPath('/tv')).toBe(false)
+    expect(isAppShellPath('/tv/abc')).toBe(false)
+    expect(isAppShellPath('/tv/1396/extra')).toBe(false)
   })
 })
 

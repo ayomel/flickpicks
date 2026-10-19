@@ -5,6 +5,7 @@ import { MobileTabBar } from '@/components/MobileTabBar'
 import { SiteFooter } from '@/components/SiteFooter'
 import { Home } from './pages/Home'
 import { MovieDetails } from './pages/MovieDetails'
+import { TvDetails } from './pages/TvDetails'
 import { NotFound } from './pages/NotFound'
 
 export const ScrollToTop = () => {
@@ -25,6 +26,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/movies/:id" element={<MovieDetails />} />
+        <Route path="/tv/:id" element={<TvDetails />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <SiteFooter />
