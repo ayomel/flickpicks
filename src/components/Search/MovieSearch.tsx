@@ -7,7 +7,10 @@ import {
   useSearchQuery,
   type SearchMediaResult,
 } from '@/hooks/useSearchQuery'
-import { getSearchResultKey } from '@/utils/searchResult'
+import {
+  getSearchResultKey,
+  getSearchResultPath,
+} from '@/utils/searchResult'
 import { SearchDropdown, SearchDropdownMessage } from './SearchDropdown'
 import { SearchInput } from './SearchInput'
 import { SearchResultRow } from './SearchResultRow'
@@ -33,15 +36,7 @@ export const MovieSearch = () => {
 
   const selectResult = useCallback(
     (item: SearchMediaResult) => {
-      if (item.media_type === 'movie') {
-        navigate(`/movies/${item.id}`)
-      } else {
-        window.open(
-          `https://www.themoviedb.org/tv/${item.id}`,
-          '_blank',
-          'noopener,noreferrer',
-        )
-      }
+      navigate(getSearchResultPath(item))
       setQuery('')
       setOpen(false)
       setActiveIndex(0)

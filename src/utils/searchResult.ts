@@ -14,3 +14,6 @@ export const getSearchResultYear = (item: SearchMediaResult) => {
 export const getSearchResultKey = (item: SearchMediaResult) => {
   return `${item.media_type}-${item.id}`
 }
+
+export const getSearchResultPath = (item: SearchMediaResult) =>
+  item.media_type === 'movie' ? `/movies/${item.id}` : `/tv/${item.id}`
