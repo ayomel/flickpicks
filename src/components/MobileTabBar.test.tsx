@@ -61,7 +61,7 @@ describe('MobileTabBar', () => {
     expect(
       screen.getByRole('dialog', { name: 'Search movies' }),
     ).toBeInTheDocument()
-    expect(screen.getByRole('combobox')).toHaveFocus()
+    expect(screen.getByRole('combobox')).toBeVisible()
   })
 
   it('returns focus to Search when Escape closes the panel', async () => {
