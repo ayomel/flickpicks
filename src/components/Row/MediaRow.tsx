@@ -11,6 +11,10 @@ import { Button } from '@/components/ui/button'
 import { SectionLabel } from '@/components/ui/section-label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
+import {
+  detailPageShell,
+  detailPageTrackPad,
+} from '@/components/MovieDetails/detailPageLayout'
 
 export type MediaRowItemOptions = {
   tabIndex: number
@@ -34,15 +38,32 @@ type MediaRowProps<T> = {
   showHeading?: boolean
   /** First N cards load eagerly for LCP on above-the-fold rows. */
   eagerCount?: number
+  detailGutter?: boolean
 }
 
-const MediaRowSkeleton = ({ variant }: { variant: 'poster' | 'backdrop' }) => {
+const rowPad = (detailGutter: boolean) =>
+  detailGutter
+    ? detailPageTrackPad
+    : 'px-6 scroll-px-6 sm:px-8 sm:scroll-px-8 lg:px-10 lg:scroll-px-10'
+
+const headingWrap = (detailGutter: boolean) =>
+  detailGutter ? detailPageShell : 'px-6 sm:px-8 lg:px-10'
+
+const MediaRowSkeleton = ({
+  variant,
+  detailGutter = false,
+}: {
+  variant: 'poster' | 'backdrop'
+  detailGutter?: boolean
+}) => {
   const cardClass =
     variant === 'backdrop' ? 'w-64 shrink-0 sm:w-80' : 'w-36 shrink-0 sm:w-40'
   const aspectClass = variant === 'backdrop' ? 'aspect-video' : 'aspect-[2/3]'
 
   return (
-    <div className="flex gap-3 overflow-hidden px-6 py-2 sm:px-8 lg:px-10">
+    <div
+      className={cn('flex gap-3 overflow-hidden py-2', rowPad(detailGutter))}
+    >
       {Array.from({ length: 5 }, (_, index) => (
         <div key={index} className={cardClass}>
           <Skeleton className={cn(aspectClass, 'w-full rounded-md')} />
@@ -102,6 +123,7 @@ export function MediaRow<T>({
   variant = 'poster',
   showHeading = true,
   eagerCount = 0,
+  detailGutter = false,
 }: MediaRowProps<T>) {
   const listRef = useRef<HTMLUListElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
@@ -189,7 +211,7 @@ export function MediaRow<T>({
   return (
     <section className={cn('relative z-10 py-8', className)}>
       {showHeading ? (
-        <div className="px-6 sm:px-8 lg:px-10">
+        <div className={headingWrap(detailGutter)}>
           <SectionLabel className="mb-2">{label}</SectionLabel>
           <h2 className="mb-5 text-xl font-semibold tracking-tight text-foreground">
             {title}
@@ -198,13 +220,23 @@ export function MediaRow<T>({
       ) : null}
 
       {isLoading ? (
-        <MediaRowSkeleton variant={variant} />
+        <MediaRowSkeleton variant={variant} detailGutter={detailGutter} />
       ) : isError ? (
-        <p className="m-0 px-6 text-sm text-muted-foreground sm:px-8 lg:px-10">
+        <p
+          className={cn(
+            'm-0 text-sm text-muted-foreground',
+            headingWrap(detailGutter),
+          )}
+        >
           {errorMessage}
         </p>
       ) : isEmpty ? (
-        <p className="m-0 px-6 text-sm text-muted-foreground sm:px-8 lg:px-10">
+        <p
+          className={cn(
+            'm-0 text-sm text-muted-foreground',
+            headingWrap(detailGutter),
+          )}
+        >
           {emptyMessage}
         </p>
       ) : (
@@ -232,7 +264,7 @@ export function MediaRow<T>({
               className={cn(
                 'm-0 flex w-full list-none gap-3 overflow-x-auto py-3',
                 'snap-x snap-mandatory scroll-smooth [scrollbar-width:thin]',
-                'px-6 scroll-px-6 sm:px-8 sm:scroll-px-8 lg:px-10 lg:scroll-px-10',
+                rowPad(detailGutter),
               )}
               onKeyDown={onListKeyDown}
             >
@@ -266,7 +298,9 @@ export function MediaRow<T>({
         </>
       )}
 
-      {footer ? <div className="px-6 sm:px-8 lg:px-10">{footer}</div> : null}
+      {footer ? (
+        <div className={headingWrap(detailGutter)}>{footer}</div>
+      ) : null}
     </section>
   )
 }

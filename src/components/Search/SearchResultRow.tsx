@@ -3,10 +3,7 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import type { SearchMediaResult } from '@/types/search'
 import { getPosterThumbPath } from '@/utils/getPosterPath'
-import {
-  getSearchResultTitle,
-  getSearchResultYear,
-} from '@/utils/searchResult'
+import { getSearchResultTitle, getSearchResultYear } from '@/utils/searchResult'
 import { formatSearchGenreLabels } from '@/utils/tmdbGenres'
 
 type SearchResultRowProps = {

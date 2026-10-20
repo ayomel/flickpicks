@@ -9,9 +9,19 @@ import {
 } from './formatTv'
 
 const baseShow = {
-  created_by: [{ id: 1, credit_id: 'c1', name: 'Vince Gilligan', gender: 2, profile_path: null }],
+  created_by: [
+    {
+      id: 1,
+      credit_id: 'c1',
+      name: 'Vince Gilligan',
+      gender: 2,
+      profile_path: null,
+    },
+  ],
   networks: [{ id: 2, logo_path: null, name: 'AMC', origin_country: 'US' }],
-  production_countries: [{ iso_3166_1: 'US', name: 'United States of America' }],
+  production_countries: [
+    { iso_3166_1: 'US', name: 'United States of America' },
+  ],
   origin_country: ['US'],
 } as TvDetails
 

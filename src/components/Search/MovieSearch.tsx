@@ -7,10 +7,7 @@ import {
   useSearchQuery,
   type SearchMediaResult,
 } from '@/hooks/useSearchQuery'
-import {
-  getSearchResultKey,
-  getSearchResultPath,
-} from '@/utils/searchResult'
+import { getSearchResultKey, getSearchResultPath } from '@/utils/searchResult'
 import { SearchDropdown, SearchDropdownMessage } from './SearchDropdown'
 import { SearchInput } from './SearchInput'
 import { SearchResultRow } from './SearchResultRow'
@@ -28,11 +25,17 @@ export const MovieSearch = () => {
   const [activeIndex, setActiveIndex] = useState(0)
 
   const debouncedQuery = useDebouncedValue(query, 300)
-  const { data: results = [], isLoading, isError } = useSearchQuery(debouncedQuery)
+  const {
+    data: results = [],
+    isLoading,
+    isError,
+  } = useSearchQuery(debouncedQuery)
 
   const trimmedDebounced = debouncedQuery.trim()
-  const showDropdown =
-    open && trimmedDebounced.length >= MIN_SEARCH_LENGTH
+  const showDropdown = open && trimmedDebounced.length >= MIN_SEARCH_LENGTH
+
+  const selectedIndex =
+    results.length === 0 ? 0 : Math.min(activeIndex, results.length - 1)
 
   const selectResult = useCallback(
     (item: SearchMediaResult) => {
@@ -44,9 +47,10 @@ export const MovieSearch = () => {
     [navigate],
   )
 
-  useEffect(() => {
+  const handleQueryChange = (value: string) => {
+    setQuery(value)
     setActiveIndex(0)
-  }, [results])
+  }
 
   useEffect(() => {
     const handlePointerDown = (event: MouseEvent) => {
@@ -74,9 +78,9 @@ export const MovieSearch = () => {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [])
 
-  const handleInputKeyDown: ComponentProps<
-    typeof SearchInput
-  >['onKeyDown'] = (event) => {
+  const handleInputKeyDown: ComponentProps<typeof SearchInput>['onKeyDown'] = (
+    event,
+  ) => {
     if (event.key === 'Escape') {
       setOpen(false)
       inputRef.current?.blur()
@@ -93,12 +97,12 @@ export const MovieSearch = () => {
       setActiveIndex((prev) => Math.max(prev - 1, 0))
     } else if (event.key === 'Enter') {
       event.preventDefault()
-      const item = results[activeIndex]
+      const item = results[selectedIndex]
       if (item) selectResult(item)
     }
   }
 
-  const activeItem = showDropdown ? results[activeIndex] : undefined
+  const activeItem = showDropdown ? results[selectedIndex] : undefined
   const activeOptionId = activeItem
     ? `search-option-${instanceId}-${getSearchResultKey(activeItem)}`
     : undefined
@@ -108,7 +112,7 @@ export const MovieSearch = () => {
       <SearchInput
         inputRef={inputRef}
         value={query}
-        onChange={setQuery}
+        onChange={handleQueryChange}
         onFocus={() => setOpen(true)}
         onKeyDown={handleInputKeyDown}
         listboxId={LISTBOX_ID}
@@ -131,7 +135,7 @@ export const MovieSearch = () => {
               key={getSearchResultKey(item)}
               item={item}
               optionId={`search-option-${instanceId}-${getSearchResultKey(item)}`}
-              isActive={index === activeIndex}
+              isActive={index === selectedIndex}
               onSelect={selectResult}
               onHover={() => setActiveIndex(index)}
             />

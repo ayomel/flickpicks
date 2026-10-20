@@ -18,20 +18,43 @@ import {
   POSTER_SIZES_DETAIL,
 } from '@/utils/getPosterPath'
 
+const MOBILE_POSTER_WIDTH = 72
+
 type DetailItemProps = {
   label: string
   value: string | null
+  compact?: boolean
 }
 
-const DetailItem = ({ label, value }: DetailItemProps) => {
+const DetailItem = ({ label, value, compact = false }: DetailItemProps) => {
   if (!value) return null
 
   return (
-    <div className="flex flex-col gap-1">
-      <dt className="font-mono text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">
+    <div
+      className={
+        compact
+          ? 'grid grid-cols-[minmax(0,5.25rem)_1fr] items-baseline gap-x-1.5'
+          : 'flex flex-col gap-1'
+      }
+    >
+      <dt
+        className={
+          compact
+            ? 'font-mono text-[0.625rem] font-semibold tracking-[0.06em] whitespace-nowrap text-muted-foreground uppercase'
+            : 'font-mono text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase'
+        }
+      >
         {label}
       </dt>
-      <dd className="m-0 text-sm text-foreground">{value}</dd>
+      <dd
+        className={
+          compact
+            ? 'm-0 text-right text-xs leading-snug text-foreground'
+            : 'm-0 text-sm text-foreground'
+        }
+      >
+        {value}
+      </dd>
     </div>
   )
 }
@@ -58,16 +81,24 @@ export const MovieDetailsInfo = ({ movie }: MovieDetailsInfoProps) => {
   const status = movie.status?.trim() || null
   const hasGenres = movie.genres.length > 0
 
-  const renderGenres = () =>
+  const renderGenres = (compact: boolean) =>
     hasGenres ? (
       <div>
-        <SectionLabel className="mb-3">Genres</SectionLabel>
-        <div className="flex flex-wrap gap-2">
+        <SectionLabel className={compact ? 'mb-1' : 'mb-2 lg:mb-3'}>
+          Genres
+        </SectionLabel>
+        <div
+          className={compact ? 'flex flex-wrap gap-1' : 'flex flex-wrap gap-2'}
+        >
           {movie.genres.map((genre) => (
             <Badge
               key={genre.id}
               variant="secondary"
-              className="border border-border"
+              className={
+                compact
+                  ? 'h-5 border border-border px-1.5 text-[0.625rem]'
+                  : 'border border-border'
+              }
             >
               {genre.name}
             </Badge>
@@ -76,27 +107,35 @@ export const MovieDetailsInfo = ({ movie }: MovieDetailsInfoProps) => {
       </div>
     ) : null
 
-  const renderDetails = () => (
-    <dl className="m-0 flex flex-col gap-4">
-      <DetailItem label="Release date" value={releaseDate} />
-      <DetailItem label="Runtime" value={runtime} />
-      <DetailItem label="Status" value={status} />
-      <DetailItem label="Language" value={language} />
-      <DetailItem label="Countries" value={countries} />
-      <DetailItem label="Studios" value={studios} />
-      <DetailItem label="Budget" value={budget} />
+  const renderDetails = (compact: boolean) => (
+    <dl
+      className={
+        compact ? 'm-0 flex flex-col gap-0' : 'm-0 flex flex-col gap-4'
+      }
+    >
+      <DetailItem
+        compact={compact}
+        label={compact ? 'Released' : 'Release date'}
+        value={releaseDate}
+      />
+      <DetailItem compact={compact} label="Runtime" value={runtime} />
+      <DetailItem compact={compact} label="Status" value={status} />
+      <DetailItem compact={compact} label="Language" value={language} />
+      <DetailItem compact={compact} label="Countries" value={countries} />
+      <DetailItem compact={compact} label="Studios" value={studios} />
+      <DetailItem compact={compact} label="Budget" value={budget} />
     </dl>
   )
 
-  const renderPoster = (loading: 'eager' | 'lazy') =>
+  const renderPoster = (loading: 'eager' | 'lazy', width?: number) =>
     showPoster && posterUrl ? (
       <img
         src={posterUrl}
         srcSet={posterPath ? getPosterSrcSetDetail(posterPath) : undefined}
         sizes={posterPath ? POSTER_SIZES_DETAIL : undefined}
         alt={`${movie.title} poster`}
-        width={342}
-        height={513}
+        width={width ?? 342}
+        height={width ? Math.round(width * 1.5) : 513}
         loading={loading}
         decoding="async"
         onError={() => setPosterFailed(true)}
@@ -104,19 +143,26 @@ export const MovieDetailsInfo = ({ movie }: MovieDetailsInfoProps) => {
       />
     ) : (
       <div className="flex aspect-[2/3] w-full items-center justify-center bg-muted">
-        <Film className="size-10 text-muted-foreground" aria-hidden />
+        <Film
+          className={
+            width
+              ? 'size-7 text-muted-foreground'
+              : 'size-10 text-muted-foreground'
+          }
+          aria-hidden
+        />
       </div>
     )
 
   return (
     <aside className="flex flex-col gap-6">
-      <div className="grid grid-cols-[110px_1fr] gap-4 rounded-lg bg-card p-5 lg:hidden">
+      <div className="grid grid-cols-[72px_1fr] gap-2 rounded-lg bg-card p-2 lg:hidden">
         <div className="self-start overflow-hidden rounded-md border border-border bg-muted">
-          {renderPoster('lazy')}
+          {renderPoster('lazy', MOBILE_POSTER_WIDTH)}
         </div>
-        <div className="flex min-w-0 flex-col gap-4">
-          {renderGenres()}
-          {renderDetails()}
+        <div className="flex min-w-0 flex-col gap-1.5">
+          {renderGenres(true)}
+          {renderDetails(true)}
         </div>
       </div>
 
@@ -124,8 +170,8 @@ export const MovieDetailsInfo = ({ movie }: MovieDetailsInfoProps) => {
         <div className="overflow-hidden rounded-md border border-border bg-card">
           {renderPoster('eager')}
         </div>
-        {renderGenres()}
-        {renderDetails()}
+        {renderGenres(false)}
+        {renderDetails(false)}
       </div>
     </aside>
   )
