@@ -27,11 +27,13 @@ const DetailItem = ({ label, value }: DetailItemProps) => {
   if (!value) return null
 
   return (
-    <div className="flex flex-col gap-1">
-      <dt className="font-mono text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">
+    <div className="grid grid-cols-[minmax(0,6.25rem)_1fr] items-baseline gap-x-3 py-1 lg:flex lg:flex-col lg:gap-1 lg:py-0">
+      <dt className="font-mono text-[0.6875rem] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
         {label}
       </dt>
-      <dd className="m-0 text-sm text-foreground">{value}</dd>
+      <dd className="m-0 text-right text-sm text-foreground lg:text-left">
+        {value}
+      </dd>
     </div>
   )
 }
@@ -77,7 +79,7 @@ export const MovieDetailsInfo = ({ movie }: MovieDetailsInfoProps) => {
     ) : null
 
   const renderDetails = () => (
-    <dl className="m-0 flex flex-col gap-4">
+    <dl className="m-0 flex flex-col gap-0.5 lg:gap-4">
       <DetailItem label="Release date" value={releaseDate} />
       <DetailItem label="Runtime" value={runtime} />
       <DetailItem label="Status" value={status} />
@@ -110,11 +112,11 @@ export const MovieDetailsInfo = ({ movie }: MovieDetailsInfoProps) => {
 
   return (
     <aside className="flex flex-col gap-6">
-      <div className="grid grid-cols-[110px_1fr] gap-4 rounded-lg bg-card p-5 lg:hidden">
+      <div className="grid grid-cols-[110px_1fr] gap-3 rounded-lg bg-card p-4 lg:hidden">
         <div className="self-start overflow-hidden rounded-md border border-border bg-muted">
           {renderPoster('lazy')}
         </div>
-        <div className="flex min-w-0 flex-col gap-4">
+        <div className="flex min-w-0 flex-col gap-3">
           {renderGenres()}
           {renderDetails()}
         </div>

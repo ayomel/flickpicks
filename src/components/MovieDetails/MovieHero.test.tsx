@@ -1,4 +1,5 @@
 import { cleanup, render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, describe, expect, it } from 'vitest'
 import { MovieHero } from './MovieHero'
@@ -25,13 +26,22 @@ const movie = {
   trailer: 'https://www.youtube.com/watch?v=vKQi3bBA1y8',
 } as MovieDetails
 
-describe('MovieHero', () => {
-  it('shows a back link, title, tagline, and meta without action buttons', () => {
-    render(
+const renderHero = () => {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
+  return render(
+    <QueryClientProvider client={client}>
       <MemoryRouter>
         <MovieHero movie={movie} />
-      </MemoryRouter>,
-    )
+      </MemoryRouter>
+    </QueryClientProvider>,
+  )
+}
+
+describe('MovieHero', () => {
+  it('shows a back link, title, tagline, meta, and hero actions', () => {
+    renderHero()
 
     expect(
       screen.getByRole('link', { name: 'Back to browse' }),
@@ -42,7 +52,7 @@ describe('MovieHero', () => {
     expect(screen.getByText('Welcome to the Real World.')).toBeInTheDocument()
     expect(screen.getByText(/1999/)).toBeInTheDocument()
     expect(
-      screen.queryByRole('link', { name: /play trailer/i }),
-    ).not.toBeInTheDocument()
+      screen.getByRole('button', { name: /play trailer/i }),
+    ).toBeInTheDocument()
   })
 })

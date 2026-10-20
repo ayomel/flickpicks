@@ -18,8 +18,7 @@ export const MovieMetadata = ({ movie }: MovieMetadataProps) => {
   const showRating = movie.vote_count > 0
 
   return (
-    <div className="flex max-w-3xl flex-col gap-4">
-      {/* max-w-2xl keeps the title inside the lg+ column scrim (see MovieHeroOverlays). */}
+    <div className="flex max-w-2xl flex-col gap-2.5 sm:gap-3">
       <h1 className="m-0 max-w-2xl text-[clamp(2rem,5vw,3.5rem)] leading-none font-semibold tracking-[-0.035em] text-foreground [overflow-wrap:anywhere] drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
         {movie.title}
       </h1>

@@ -5,12 +5,15 @@ type PageSectionProps = {
   children: ReactNode
   className?: string
   bordered?: boolean
+  /** Align with movie detail page `max-w-6xl` gutter. */
+  contentInset?: 'default' | 'detail'
 }
 
 export const PageSection = ({
   children,
   className,
   bordered = true,
+  contentInset = 'default',
 }: PageSectionProps) => {
   return (
     <section
@@ -20,7 +23,14 @@ export const PageSection = ({
         className,
       )}
     >
-      <div className="mx-auto w-full max-w-5xl">{children}</div>
+      <div
+        className={cn(
+          'mx-auto w-full',
+          contentInset === 'detail' ? 'max-w-6xl' : 'max-w-5xl',
+        )}
+      >
+        {children}
+      </div>
     </section>
   )
 }

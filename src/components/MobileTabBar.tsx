@@ -42,6 +42,11 @@ export const MobileTabBar = () => {
   useEffect(() => {
     if (!searchOpen) return
 
+    const input = shellRef.current?.querySelector<HTMLInputElement>(
+      'input[type="search"]',
+    )
+    input?.focus()
+
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault()
