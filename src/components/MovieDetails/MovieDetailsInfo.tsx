@@ -33,14 +33,14 @@ const DetailItem = ({ label, value, compact = false }: DetailItemProps) => {
     <div
       className={
         compact
-          ? 'grid grid-cols-[minmax(0,4.75rem)_1fr] items-baseline gap-x-1.5'
+          ? 'grid grid-cols-[minmax(0,5.25rem)_1fr] items-baseline gap-x-1.5'
           : 'flex flex-col gap-1'
       }
     >
       <dt
         className={
           compact
-            ? 'font-mono text-[0.625rem] font-semibold tracking-[0.06em] text-muted-foreground uppercase'
+            ? 'font-mono text-[0.625rem] font-semibold tracking-[0.06em] whitespace-nowrap text-muted-foreground uppercase'
             : 'font-mono text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase'
         }
       >
@@ -88,11 +88,7 @@ export const MovieDetailsInfo = ({ movie }: MovieDetailsInfoProps) => {
           Genres
         </SectionLabel>
         <div
-          className={
-            compact
-              ? 'flex max-h-9 flex-wrap gap-1 overflow-hidden'
-              : 'flex flex-wrap gap-2'
-          }
+          className={compact ? 'flex flex-wrap gap-1' : 'flex flex-wrap gap-2'}
         >
           {movie.genres.map((genre) => (
             <Badge
@@ -117,7 +113,11 @@ export const MovieDetailsInfo = ({ movie }: MovieDetailsInfoProps) => {
         compact ? 'm-0 flex flex-col gap-0' : 'm-0 flex flex-col gap-4'
       }
     >
-      <DetailItem compact={compact} label="Release date" value={releaseDate} />
+      <DetailItem
+        compact={compact}
+        label={compact ? 'Released' : 'Release date'}
+        value={releaseDate}
+      />
       <DetailItem compact={compact} label="Runtime" value={runtime} />
       <DetailItem compact={compact} label="Status" value={status} />
       <DetailItem compact={compact} label="Language" value={language} />

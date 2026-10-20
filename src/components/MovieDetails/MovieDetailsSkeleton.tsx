@@ -54,7 +54,7 @@ export const MovieDetailsSkeleton = ({
       <div className={`${detailPageShell} py-8 lg:py-10`}>
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_16rem]">
           <Skeleton className="hidden h-24 max-w-2xl bg-muted-foreground/20 lg:block" />
-          <Skeleton className="aspect-[2/3] w-full max-w-[92px] bg-muted-foreground/20 lg:max-w-none" />
+          <Skeleton className="aspect-[2/3] w-full max-w-[72px] bg-muted-foreground/20 lg:max-w-none" />
         </div>
       </div>
     </div>

@@ -34,6 +34,9 @@ export const MovieSearch = () => {
   const trimmedDebounced = debouncedQuery.trim()
   const showDropdown = open && trimmedDebounced.length >= MIN_SEARCH_LENGTH
 
+  const selectedIndex =
+    results.length === 0 ? 0 : Math.min(activeIndex, results.length - 1)
+
   const selectResult = useCallback(
     (item: SearchMediaResult) => {
       navigate(getSearchResultPath(item))
@@ -44,10 +47,10 @@ export const MovieSearch = () => {
     [navigate],
   )
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- reset highlight when results change
+  const handleQueryChange = (value: string) => {
+    setQuery(value)
     setActiveIndex(0)
-  }, [results])
+  }
 
   useEffect(() => {
     const handlePointerDown = (event: MouseEvent) => {
@@ -94,12 +97,12 @@ export const MovieSearch = () => {
       setActiveIndex((prev) => Math.max(prev - 1, 0))
     } else if (event.key === 'Enter') {
       event.preventDefault()
-      const item = results[activeIndex]
+      const item = results[selectedIndex]
       if (item) selectResult(item)
     }
   }
 
-  const activeItem = showDropdown ? results[activeIndex] : undefined
+  const activeItem = showDropdown ? results[selectedIndex] : undefined
   const activeOptionId = activeItem
     ? `search-option-${instanceId}-${getSearchResultKey(activeItem)}`
     : undefined
@@ -109,7 +112,7 @@ export const MovieSearch = () => {
       <SearchInput
         inputRef={inputRef}
         value={query}
-        onChange={setQuery}
+        onChange={handleQueryChange}
         onFocus={() => setOpen(true)}
         onKeyDown={handleInputKeyDown}
         listboxId={LISTBOX_ID}
@@ -132,7 +135,7 @@ export const MovieSearch = () => {
               key={getSearchResultKey(item)}
               item={item}
               optionId={`search-option-${instanceId}-${getSearchResultKey(item)}`}
-              isActive={index === activeIndex}
+              isActive={index === selectedIndex}
               onSelect={selectResult}
               onHover={() => setActiveIndex(index)}
             />

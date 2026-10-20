@@ -43,9 +43,7 @@ export const MovieDetails = () => {
     data.overview?.trim() || `Details for ${data.title} on FlickPick.`
 
   return (
-    <div
-      className="min-h-svh bg-background pb-[calc(5.5rem+env(safe-area-inset-bottom))] text-foreground max-sm:scroll-pb-[calc(5.5rem+env(safe-area-inset-bottom))] sm:pb-0"
-    >
+    <div className="min-h-svh bg-background pb-8 text-foreground sm:pb-0">
       <Seo
         title={`${data.title} · FlickPick`}
         description={description}
