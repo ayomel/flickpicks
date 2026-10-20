@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { detailPageShell } from '@/components/MovieDetails/detailPageLayout'
 import { cn } from '@/lib/utils'
 
 type PageSectionProps = {
@@ -15,6 +16,20 @@ export const PageSection = ({
   bordered = true,
   contentInset = 'default',
 }: PageSectionProps) => {
+  if (contentInset === 'detail') {
+    return (
+      <section
+        className={cn(
+          'py-10',
+          bordered && 'border-t border-border',
+          className,
+        )}
+      >
+        <div className={detailPageShell}>{children}</div>
+      </section>
+    )
+  }
+
   return (
     <section
       className={cn(
@@ -23,14 +38,7 @@ export const PageSection = ({
         className,
       )}
     >
-      <div
-        className={cn(
-          'mx-auto w-full',
-          contentInset === 'detail' ? 'max-w-6xl' : 'max-w-5xl',
-        )}
-      >
-        {children}
-      </div>
+      <div className="mx-auto w-full max-w-5xl">{children}</div>
     </section>
   )
 }

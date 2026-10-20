@@ -27,7 +27,7 @@ const DetailItem = ({ label, value }: DetailItemProps) => {
   if (!value) return null
 
   return (
-    <div className="grid grid-cols-[minmax(0,6.25rem)_1fr] items-baseline gap-x-3 py-1 lg:flex lg:flex-col lg:gap-1 lg:py-0">
+    <div className="grid grid-cols-[minmax(0,5.75rem)_1fr] items-baseline gap-x-2 py-0.5 lg:flex lg:flex-col lg:gap-1 lg:py-0">
       <dt className="font-mono text-[0.6875rem] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
         {label}
       </dt>
@@ -63,7 +63,7 @@ export const MovieDetailsInfo = ({ movie }: MovieDetailsInfoProps) => {
   const renderGenres = () =>
     hasGenres ? (
       <div>
-        <SectionLabel className="mb-3">Genres</SectionLabel>
+        <SectionLabel className="mb-2 lg:mb-3">Genres</SectionLabel>
         <div className="flex flex-wrap gap-2">
           {movie.genres.map((genre) => (
             <Badge
@@ -79,7 +79,7 @@ export const MovieDetailsInfo = ({ movie }: MovieDetailsInfoProps) => {
     ) : null
 
   const renderDetails = () => (
-    <dl className="m-0 flex flex-col gap-0.5 lg:gap-4">
+    <dl className="m-0 flex flex-col gap-0 lg:gap-4">
       <DetailItem label="Release date" value={releaseDate} />
       <DetailItem label="Runtime" value={runtime} />
       <DetailItem label="Status" value={status} />
@@ -112,7 +112,7 @@ export const MovieDetailsInfo = ({ movie }: MovieDetailsInfoProps) => {
 
   return (
     <aside className="flex flex-col gap-6">
-      <div className="grid grid-cols-[110px_1fr] gap-3 rounded-lg bg-card p-4 lg:hidden">
+      <div className="grid grid-cols-[92px_1fr] gap-2.5 rounded-lg bg-card p-3 lg:hidden">
         <div className="self-start overflow-hidden rounded-md border border-border bg-muted">
           {renderPoster('lazy')}
         </div>
