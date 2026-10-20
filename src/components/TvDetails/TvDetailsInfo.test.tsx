@@ -18,11 +18,21 @@ const show = {
   status: 'Ended',
   genres: [{ id: 18, name: 'Drama' }],
   created_by: [
-    { id: 1, credit_id: 'c1', name: 'Vince Gilligan', gender: 2, profile_path: null },
+    {
+      id: 1,
+      credit_id: 'c1',
+      name: 'Vince Gilligan',
+      gender: 2,
+      profile_path: null,
+    },
   ],
   networks: [{ id: 2, logo_path: null, name: 'AMC', origin_country: 'US' }],
-  spoken_languages: [{ english_name: 'English', iso_639_1: 'en', name: 'English' }],
-  production_countries: [{ iso_3166_1: 'US', name: 'United States of America' }],
+  spoken_languages: [
+    { english_name: 'English', iso_639_1: 'en', name: 'English' },
+  ],
+  production_countries: [
+    { iso_3166_1: 'US', name: 'United States of America' },
+  ],
   origin_country: ['US'],
   poster_path: null,
 } as TvDetails

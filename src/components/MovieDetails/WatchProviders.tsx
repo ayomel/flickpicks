@@ -7,7 +7,6 @@ import { cn } from '@/lib/utils'
 
 type WatchProvidersProps = {
   providers?: StreamingProviders
-  contentInset?: 'default' | 'detail'
 }
 
 const PROVIDER_LOGO_SIZE = 92
@@ -117,10 +116,7 @@ const Attribution = ({
   )
 }
 
-export const WatchProviders = ({
-  providers,
-  contentInset = 'default',
-}: WatchProvidersProps) => {
+export const WatchProviders = ({ providers }: WatchProvidersProps) => {
   const stream = providers?.flatrate ?? []
   const rent = providers?.rent ?? []
   const buy = providers?.buy ?? []
@@ -131,7 +127,7 @@ export const WatchProviders = ({
 
   if (!hasAny) {
     return (
-      <PageSection contentInset={contentInset}>
+      <PageSection>
         <h2 className="mb-3 font-mono text-xs font-semibold tracking-[0.08em] text-brand uppercase">
           Where to watch
         </h2>
@@ -146,7 +142,7 @@ export const WatchProviders = ({
   }
 
   return (
-    <PageSection contentInset={contentInset}>
+    <PageSection>
       <h2 className="mb-6 font-mono text-xs font-semibold tracking-[0.08em] text-brand uppercase">
         Where to watch
       </h2>

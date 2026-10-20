@@ -23,12 +23,7 @@ export const MovieHero = ({ movie }: MovieHeroProps) => {
     !backdropPath && movie.backdrop?.startsWith('http') ? movie.backdrop : null
 
   return (
-    <section
-      className={cn(
-        'relative w-full overflow-x-hidden bg-background',
-        heroMinHeight,
-      )}
-    >
+    <section className={cn('relative w-full bg-background', heroMinHeight)}>
       <HeroBackdrop backdropPath={backdropPath} absoluteUrl={absoluteUrl} />
       <MovieHeroOverlays />
       <div
@@ -46,7 +41,7 @@ export const MovieHero = ({ movie }: MovieHeroProps) => {
           to="/"
           className={cn(
             'inline-flex w-fit items-center gap-2 rounded-full bg-background/85 px-3 py-1 text-sm font-medium text-foreground backdrop-blur-sm',
-            'outline-none transition-colors hover:text-foreground',
+            'outline-none transition-colors',
             'focus-visible:ring-2 focus-visible:ring-foreground/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
           )}
         >
@@ -55,20 +50,20 @@ export const MovieHero = ({ movie }: MovieHeroProps) => {
         </Link>
         <div
           className={cn(
-            'relative -mx-6 px-6 sm:-mx-8 sm:px-8 lg:mx-0 lg:px-0',
-            "max-lg:before:pointer-events-none max-lg:before:absolute max-lg:before:-inset-x-6 max-lg:before:-top-24 max-lg:before:bottom-0 max-lg:before:content-['']",
+            "relative max-lg:before:pointer-events-none max-lg:before:absolute max-lg:before:-inset-x-6 max-lg:before:-top-24 max-lg:before:bottom-0 max-lg:before:content-['']",
             'max-lg:before:bg-linear-to-b max-lg:before:from-transparent max-lg:before:via-background/75 max-lg:before:via-45% max-lg:before:to-background',
             'sm:max-lg:before:-inset-x-8',
-            'lg:before:hidden',
           )}
         >
-          <div className="relative flex max-w-2xl flex-col gap-3 sm:gap-3.5">
+          <div className="relative flex flex-col gap-3 sm:gap-3.5">
             <MovieMetadata movie={movie} />
-            <MovieOverview
-              overview={movie.overview}
-              clampLines
-              showLabel={false}
-            />
+            <div className="lg:hidden">
+              <MovieOverview
+                overview={movie.overview}
+                clampLines
+                showLabel={false}
+              />
+            </div>
             <div className="flex flex-wrap gap-3 pt-0.5">
               <TrailerPlayer movie={movie} />
               <AddToWatchlistButton movieId={movie.id} />

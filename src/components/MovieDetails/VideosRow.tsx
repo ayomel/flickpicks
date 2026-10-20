@@ -8,7 +8,7 @@ import { VideoModal } from './VideoModal'
 
 type VideosRowProps = {
   movie: MovieDetails
-  contentInset?: 'default' | 'detail'
+  detailGutter?: boolean
 }
 
 type VideoCardProps = {
@@ -74,10 +74,7 @@ const VideoCard = ({ video, tabIndex, onFocus, onSelect }: VideoCardProps) => {
   )
 }
 
-export const VideosRow = ({
-  movie,
-  contentInset = 'default',
-}: VideosRowProps) => {
+export const VideosRow = ({ movie, detailGutter = false }: VideosRowProps) => {
   const videos = getYoutubeVideos(movie)
   const [activeVideo, setActiveVideo] = useState<MovieVideo | null>(null)
 
@@ -89,7 +86,7 @@ export const VideosRow = ({
         label="Videos"
         title="Trailers & clips"
         variant="backdrop"
-        contentInset={contentInset}
+        detailGutter={detailGutter}
         items={videos}
         getKey={(video) => video.id}
         renderItem={(video, { tabIndex, onFocus }) => (

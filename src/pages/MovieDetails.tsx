@@ -25,7 +25,7 @@ export const MovieDetails = () => {
   }
 
   if (isLoading) {
-    return <MovieDetailsSkeleton />
+    return <MovieDetailsSkeleton detailLayout />
   }
 
   const isNotFound =
@@ -43,7 +43,9 @@ export const MovieDetails = () => {
     data.overview?.trim() || `Details for ${data.title} on FlickPick.`
 
   return (
-    <div className="min-h-svh bg-background pb-8 text-foreground sm:pb-0">
+    <div
+      className="min-h-svh bg-background pb-[calc(5.5rem+env(safe-area-inset-bottom))] text-foreground max-sm:scroll-pb-[calc(5.5rem+env(safe-area-inset-bottom))] sm:pb-0"
+    >
       <Seo
         title={`${data.title} · FlickPick`}
         description={description}
@@ -64,12 +66,9 @@ export const MovieDetails = () => {
         </div>
       </div>
 
-      <VideosRow movie={data} contentInset="detail" />
-      <WatchProviders
-        providers={data.streaming_providers}
-        contentInset="detail"
-      />
-      <MoreTrendingRow excludeId={data.id} contentInset="detail" />
+      <VideosRow movie={data} detailGutter />
+      <WatchProviders providers={data.streaming_providers} />
+      <MoreTrendingRow excludeId={data.id} detailGutter />
     </div>
   )
 }

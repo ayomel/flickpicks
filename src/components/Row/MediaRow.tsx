@@ -38,23 +38,23 @@ type MediaRowProps<T> = {
   showHeading?: boolean
   /** First N cards load eagerly for LCP on above-the-fold rows. */
   eagerCount?: number
-  contentInset?: 'default' | 'detail'
+  detailGutter?: boolean
 }
 
-const rowPad = (contentInset: 'default' | 'detail') =>
-  contentInset === 'detail'
+const rowPad = (detailGutter: boolean) =>
+  detailGutter
     ? detailPageTrackPad
     : 'px-6 scroll-px-6 sm:px-8 sm:scroll-px-8 lg:px-10 lg:scroll-px-10'
 
-const headingWrap = (contentInset: 'default' | 'detail') =>
-  contentInset === 'detail' ? detailPageShell : 'px-6 sm:px-8 lg:px-10'
+const headingWrap = (detailGutter: boolean) =>
+  detailGutter ? detailPageShell : 'px-6 sm:px-8 lg:px-10'
 
 const MediaRowSkeleton = ({
   variant,
-  contentInset = 'default',
+  detailGutter = false,
 }: {
   variant: 'poster' | 'backdrop'
-  contentInset?: 'default' | 'detail'
+  detailGutter?: boolean
 }) => {
   const cardClass =
     variant === 'backdrop' ? 'w-64 shrink-0 sm:w-80' : 'w-36 shrink-0 sm:w-40'
@@ -62,7 +62,7 @@ const MediaRowSkeleton = ({
 
   return (
     <div
-      className={cn('flex gap-3 overflow-hidden py-2', rowPad(contentInset))}
+      className={cn('flex gap-3 overflow-hidden py-2', rowPad(detailGutter))}
     >
       {Array.from({ length: 5 }, (_, index) => (
         <div key={index} className={cardClass}>
@@ -123,7 +123,7 @@ export function MediaRow<T>({
   variant = 'poster',
   showHeading = true,
   eagerCount = 0,
-  contentInset = 'default',
+  detailGutter = false,
 }: MediaRowProps<T>) {
   const listRef = useRef<HTMLUListElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
@@ -211,7 +211,7 @@ export function MediaRow<T>({
   return (
     <section className={cn('relative z-10 py-8', className)}>
       {showHeading ? (
-        <div className={headingWrap(contentInset)}>
+        <div className={headingWrap(detailGutter)}>
           <SectionLabel className="mb-2">{label}</SectionLabel>
           <h2 className="mb-5 text-xl font-semibold tracking-tight text-foreground">
             {title}
@@ -220,12 +220,12 @@ export function MediaRow<T>({
       ) : null}
 
       {isLoading ? (
-        <MediaRowSkeleton variant={variant} contentInset={contentInset} />
+        <MediaRowSkeleton variant={variant} detailGutter={detailGutter} />
       ) : isError ? (
         <p
           className={cn(
             'm-0 text-sm text-muted-foreground',
-            headingWrap(contentInset),
+            headingWrap(detailGutter),
           )}
         >
           {errorMessage}
@@ -234,7 +234,7 @@ export function MediaRow<T>({
         <p
           className={cn(
             'm-0 text-sm text-muted-foreground',
-            headingWrap(contentInset),
+            headingWrap(detailGutter),
           )}
         >
           {emptyMessage}
@@ -264,7 +264,7 @@ export function MediaRow<T>({
               className={cn(
                 'm-0 flex w-full list-none gap-3 overflow-x-auto py-3',
                 'snap-x snap-mandatory scroll-smooth [scrollbar-width:thin]',
-                rowPad(contentInset),
+                rowPad(detailGutter),
               )}
               onKeyDown={onListKeyDown}
             >
@@ -299,7 +299,7 @@ export function MediaRow<T>({
       )}
 
       {footer ? (
-        <div className={headingWrap(contentInset)}>{footer}</div>
+        <div className={headingWrap(detailGutter)}>{footer}</div>
       ) : null}
     </section>
   )

@@ -5,7 +5,7 @@ import type { TrendingMovie } from '@/types/trending'
 
 type MoreTrendingRowProps = {
   excludeId: number
-  contentInset?: 'default' | 'detail'
+  detailGutter?: boolean
 }
 
 const renderPoster = (movie: TrendingMovie, options: MediaRowItemOptions) => (
@@ -19,7 +19,7 @@ const renderPoster = (movie: TrendingMovie, options: MediaRowItemOptions) => (
 
 export const MoreTrendingRow = ({
   excludeId,
-  contentInset = 'default',
+  detailGutter = false,
 }: MoreTrendingRowProps) => {
   const { data, isLoading, isError } = useTrendingQuery()
   const movies = (data?.results ?? []).filter((movie) => movie.id !== excludeId)
@@ -35,7 +35,7 @@ export const MoreTrendingRow = ({
       emptyMessage="No other trending titles right now."
       errorMessage="Couldn't load trending movies."
       renderItem={renderPoster}
-      contentInset={contentInset}
+      detailGutter={detailGutter}
     />
   )
 }

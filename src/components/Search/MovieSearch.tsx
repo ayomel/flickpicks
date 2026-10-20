@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import type { ComponentProps } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
@@ -44,16 +44,10 @@ export const MovieSearch = () => {
     [navigate],
   )
 
-  const resultsSignature = useMemo(
-    () => results.map((item) => getSearchResultKey(item)).join('|'),
-    [results],
-  )
-  const [lastResultsSignature, setLastResultsSignature] =
-    useState(resultsSignature)
-  if (resultsSignature !== lastResultsSignature) {
-    setLastResultsSignature(resultsSignature)
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reset highlight when results change
     setActiveIndex(0)
-  }
+  }, [results])
 
   useEffect(() => {
     const handlePointerDown = (event: MouseEvent) => {
@@ -100,15 +94,12 @@ export const MovieSearch = () => {
       setActiveIndex((prev) => Math.max(prev - 1, 0))
     } else if (event.key === 'Enter') {
       event.preventDefault()
-      const item = results[selectedIndex]
+      const item = results[activeIndex]
       if (item) selectResult(item)
     }
   }
 
-  const selectedIndex =
-    results.length === 0 ? 0 : Math.min(activeIndex, results.length - 1)
-
-  const activeItem = showDropdown ? results[selectedIndex] : undefined
+  const activeItem = showDropdown ? results[activeIndex] : undefined
   const activeOptionId = activeItem
     ? `search-option-${instanceId}-${getSearchResultKey(activeItem)}`
     : undefined
@@ -141,7 +132,7 @@ export const MovieSearch = () => {
               key={getSearchResultKey(item)}
               item={item}
               optionId={`search-option-${instanceId}-${getSearchResultKey(item)}`}
-              isActive={index === selectedIndex}
+              isActive={index === activeIndex}
               onSelect={selectResult}
               onHover={() => setActiveIndex(index)}
             />
