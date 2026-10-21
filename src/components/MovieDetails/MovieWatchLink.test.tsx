@@ -7,36 +7,24 @@ afterEach(() => {
 })
 
 describe('MovieWatchLink', () => {
-  it('links to a valid TMDB movie watch page in a new tab', () => {
-    render(
-      <MovieWatchLink
-        url="https://www.themoviedb.org/movie/1433583-example/watch?locale=en-US"
-      />,
-    )
+  it('links a movie ID to the 7Movies watch page in a new tab', () => {
+    render(<MovieWatchLink movieId={969681} />)
 
     const link = screen.getByRole('link', { name: /play/i })
-    expect(link).toHaveAttribute(
-      'href',
-      'https://www.themoviedb.org/movie/1433583-example/watch?locale=en-US',
-    )
+    expect(link).toHaveAttribute('href', 'https://7movies.ac/movie/969681/watch')
     expect(link).toHaveAttribute('target', '_blank')
     expect(link).toHaveAttribute('rel', 'noopener noreferrer')
     expect(link).toHaveAccessibleName(/play/i)
   })
 
   it.each([
-    undefined,
-    '',
-    'not a URL',
-    'http://www.themoviedb.org/movie/1433583/watch',
-    'https://themoviedb.org/movie/1433583/watch',
-    'https://www.themoviedb.org.evil.example/movie/1433583/watch',
-    'https://user@www.themoviedb.org/movie/1433583/watch',
-    'https://www.themoviedb.org:8443/movie/1433583/watch',
-    'https://www.themoviedb.org/movie/1433583',
-    'https://www.themoviedb.org/tv/1433583/watch',
-  ])('does not render for an invalid watch URL: %s', (url) => {
-    render(<MovieWatchLink url={url} />)
+    0,
+    -1,
+    Number.NaN,
+    Number.POSITIVE_INFINITY,
+    Number.MAX_SAFE_INTEGER + 1,
+  ])('does not render for an invalid movie ID: %s', (movieId) => {
+    render(<MovieWatchLink movieId={movieId} />)
 
     expect(screen.queryByRole('link', { name: /play/i })).not.toBeInTheDocument()
   })

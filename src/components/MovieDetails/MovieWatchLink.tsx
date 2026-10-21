@@ -2,30 +2,17 @@ import { ExternalLink, Play } from 'lucide-react'
 import { LinkButton } from '@/components/ui/button'
 
 type MovieWatchLinkProps = {
-  url?: string
+  movieId: number
 }
 
-const getTmdbWatchUrl = (value?: string) => {
-  if (!value) return null
+const get7MoviesWatchUrl = (movieId: number) => {
+  if (!Number.isSafeInteger(movieId) || movieId <= 0) return null
 
-  try {
-    const url = new URL(value)
-    const isTmdbMovieWatchPage =
-      url.protocol === 'https:' &&
-      url.hostname === 'www.themoviedb.org' &&
-      !url.username &&
-      !url.password &&
-      !url.port &&
-      /^\/movie\/\d+(?:-[a-z\d-]+)?\/watch\/?$/i.test(url.pathname)
-
-    return isTmdbMovieWatchPage ? url.href : null
-  } catch {
-    return null
-  }
+  return `https://7movies.ac/movie/${movieId}/watch`
 }
 
-export const MovieWatchLink = ({ url }: MovieWatchLinkProps) => {
-  const watchUrl = getTmdbWatchUrl(url)
+export const MovieWatchLink = ({ movieId }: MovieWatchLinkProps) => {
+  const watchUrl = get7MoviesWatchUrl(movieId)
 
   if (!watchUrl) return null
 

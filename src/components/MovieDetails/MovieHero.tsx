@@ -66,7 +66,7 @@ export const MovieHero = ({ movie }: MovieHeroProps) => {
               />
             </div>
             <div className="flex flex-wrap gap-3 pt-0.5">
-              <MovieWatchLink url={movie.streaming_providers?.link} />
+              <MovieWatchLink movieId={movie.id} />
               <TrailerPlayer
                 media={{
                   title: movie.title,

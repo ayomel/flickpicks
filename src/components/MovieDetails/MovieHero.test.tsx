@@ -24,9 +24,6 @@ const movie = {
   production_companies: [],
   production_countries: [],
   trailer: 'https://www.youtube.com/watch?v=vKQi3bBA1y8',
-  streaming_providers: {
-    link: 'https://www.themoviedb.org/movie/603-the-matrix/watch?locale=en-US',
-  },
 } as MovieDetails
 
 const renderHero = () => {
@@ -61,7 +58,7 @@ describe('MovieHero', () => {
       screen.getByRole('link', { name: 'Play (opens in a new tab)' }),
     ).toHaveAttribute(
       'href',
-      'https://www.themoviedb.org/movie/603-the-matrix/watch?locale=en-US',
+      'https://7movies.ac/movie/603/watch',
     )
   })
 })
