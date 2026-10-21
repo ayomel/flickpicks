@@ -1,7 +1,12 @@
 export type WatchlistStatus = 'want' | 'watched'
+export type WatchlistMediaType = 'movie' | 'tv'
 
-export type WatchlistEntryCreate = {
+export type WatchlistEntryIdentity = {
   tmdb_id: number
+  media_type: WatchlistMediaType
+}
+
+export type WatchlistEntryCreate = WatchlistEntryIdentity & {
   status?: WatchlistStatus
   rating?: number | null
   review?: string
@@ -11,6 +16,7 @@ export type WatchlistEntryCreate = {
 export type WatchlistEntryRead = {
   id: number
   tmdb_id: number
+  media_type: WatchlistMediaType
   status: WatchlistStatus
   rating: number | null
   review: string

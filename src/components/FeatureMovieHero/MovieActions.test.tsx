@@ -6,7 +6,7 @@ import { MovieActions } from './MovieActions'
 import type { FeaturedMovie } from '@/types/trending'
 
 vi.mock('@/hooks/useWatchlistQuery', () => ({
-  useIsMovieOnWatchlist: () => ({ isOnWatchlist: false, isLoading: false }),
+  useIsOnWatchlist: () => ({ isOnWatchlist: false, isLoading: false }),
 }))
 
 vi.mock('@/hooks/useAddToWatchlistMutation', () => ({

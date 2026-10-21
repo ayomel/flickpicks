@@ -5,17 +5,24 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { WatchlistRow } from './WatchlistRow'
 
 vi.mock('@/hooks/useWatchlistQuery', () => ({
-  useWatchlistMovies: () => ({
-    tmdbIds: [1],
-    movies: [
+  useWatchlistTitles: () => ({
+    titles: [
       {
-        id: 1,
+        id: 42,
         title: 'Test Movie',
         poster_path: null,
         release_date: '2024-01-01',
+        media_type: 'movie',
+      },
+      {
+        id: 42,
+        title: 'Test Show',
+        poster_path: null,
+        release_date: '2020-01-01',
+        media_type: 'tv',
       },
     ],
-    isLoadingMovies: false,
+    isLoadingTitles: false,
     isError: false,
     entriesQuery: { data: [{ id: 1, tmdb_id: 1 }] },
   }),
@@ -40,6 +47,11 @@ describe('WatchlistRow', () => {
       screen.getByRole('heading', { name: 'Saved to watch' }),
     ).toBeInTheDocument()
     expect(screen.getByText('Test Movie')).toBeInTheDocument()
-    expect(screen.getByText('1 title')).toBeInTheDocument()
+    expect(screen.getByText('Test Show')).toBeInTheDocument()
+    expect(screen.getByText('2 titles')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /test show/i })).toHaveAttribute(
+      'href',
+      '/tv/42',
+    )
   })
 })

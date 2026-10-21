@@ -1,7 +1,11 @@
 import { useQueries, useQuery } from '@tanstack/react-query'
 import { apiClient } from '../../services/apiClient'
 import type { MovieDetails } from '@/types/movieDetails'
-import type { WatchlistEntryRead } from '@/types/watchlist'
+import type { TvDetails } from '@/types/tvDetails'
+import type {
+  WatchlistEntryRead,
+  WatchlistMediaType,
+} from '@/types/watchlist'
 
 export const watchlistQueryKey = ['watchlist'] as const
 
@@ -15,9 +19,16 @@ export const useWatchlistQuery = () => {
   })
 }
 
-export const useIsMovieOnWatchlist = (tmdbId: number) => {
+export const useIsOnWatchlist = (
+  tmdbId: number,
+  mediaType: WatchlistMediaType = 'movie',
+) => {
   const { data, isLoading, isFetching } = useWatchlistQuery()
-  const isOnWatchlist = data?.some((entry) => entry.tmdb_id === tmdbId) ?? false
+  const isOnWatchlist =
+    data?.some(
+      (entry) =>
+        entry.tmdb_id === tmdbId && (entry.media_type ?? 'movie') === mediaType,
+    ) ?? false
 
   return {
     isOnWatchlist,
@@ -25,45 +36,71 @@ export const useIsMovieOnWatchlist = (tmdbId: number) => {
   }
 }
 
-const uniqueOrderedTmdbIds = (entries: WatchlistEntryRead[]) => {
-  const seen = new Set<number>()
-  const ids: number[] = []
-  for (const entry of entries) {
-    if (seen.has(entry.tmdb_id)) continue
-    seen.add(entry.tmdb_id)
-    ids.push(entry.tmdb_id)
-  }
-  return ids
+export type WatchlistTitle = {
+  id: number
+  title: string
+  poster_path: string | null
+  release_date: string
+  media_type: WatchlistMediaType
 }
 
-export const useWatchlistMovies = () => {
-  const entriesQuery = useWatchlistQuery()
-  const tmdbIds = uniqueOrderedTmdbIds(entriesQuery.data ?? [])
+const uniqueOrderedEntries = (entries: WatchlistEntryRead[]) => {
+  const seen = new Set<string>()
+  return entries.filter((entry) => {
+    const key = `${entry.media_type ?? 'movie'}:${entry.tmdb_id}`
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+}
 
-  const movieQueries = useQueries({
-    queries: tmdbIds.map((id) => ({
-      queryKey: ['movie', String(id)],
-      queryFn: async () => {
-        const { data } = await apiClient.get<MovieDetails>(`/movies/${id}`)
-        return data
-      },
-    })),
+export const useWatchlistTitles = () => {
+  const entriesQuery = useWatchlistQuery()
+  const entries = uniqueOrderedEntries(entriesQuery.data ?? [])
+
+  const titleQueries = useQueries({
+    queries: entries.map((entry) => {
+      const mediaType = entry.media_type ?? 'movie'
+      const id = entry.tmdb_id
+      return {
+        queryKey: ['watchlist-detail', mediaType, String(id)],
+        queryFn: async (): Promise<WatchlistTitle> => {
+          if (mediaType === 'tv') {
+            const { data } = await apiClient.get<TvDetails>(`/tv/${id}`)
+            return {
+              id: data.id,
+              title: data.name,
+              poster_path: data.poster_path,
+              release_date: data.first_air_date,
+              media_type: mediaType,
+            }
+          }
+
+          const { data } = await apiClient.get<MovieDetails>(`/movies/${id}`)
+          return {
+            id: data.id,
+            title: data.title,
+            poster_path: data.poster_path,
+            release_date: data.release_date,
+            media_type: mediaType,
+          }
+        },
+      }
+    }),
   })
 
-  const movies = movieQueries
+  const titles = titleQueries
     .map((query) => query.data)
-    .filter((movie): movie is MovieDetails => Boolean(movie))
+    .filter((title): title is WatchlistTitle => Boolean(title))
 
-  const isLoadingMovies =
+  const isLoadingTitles =
     entriesQuery.isLoading ||
-    (tmdbIds.length > 0 && movieQueries.some((query) => query.isLoading))
+    (entries.length > 0 && titleQueries.some((query) => query.isLoading))
 
   return {
     entriesQuery,
-    tmdbIds,
-    movies,
-    isLoadingMovies,
-    isError:
-      entriesQuery.isError || movieQueries.some((query) => query.isError),
+    titles,
+    isLoadingTitles,
+    isError: entriesQuery.isError || titleQueries.some((query) => query.isError),
   }
 }

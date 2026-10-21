@@ -1,6 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '../../services/apiClient'
-import type { WatchlistEntryRead } from '@/types/watchlist'
+import type {
+  WatchlistEntryIdentity,
+  WatchlistEntryRead,
+} from '@/types/watchlist'
 import { watchlistQueryKey } from '@/hooks/useWatchlistQuery'
 
 const getWatchlistEntries = async (
@@ -17,12 +20,14 @@ export const useRemoveFromWatchlistMutation = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (tmdbId: number) => {
+    mutationFn: async ({ tmdb_id, media_type }: WatchlistEntryIdentity) => {
       const entries = await getWatchlistEntries(queryClient)
-      const matching = entries.filter((entry) => entry.tmdb_id === tmdbId)
-      await Promise.all(
-        matching.map((entry) => apiClient.delete(`/entry/${entry.id}`)),
+      const matching = entries.find(
+        (entry) =>
+          entry.tmdb_id === tmdb_id &&
+          (entry.media_type ?? 'movie') === media_type,
       )
+      if (matching) await apiClient.delete(`/entry/${matching.id}`)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: watchlistQueryKey })

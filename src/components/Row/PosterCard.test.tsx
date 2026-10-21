@@ -29,6 +29,28 @@ describe('PosterCard', () => {
     expect(screen.getByText('1999')).toBeInTheDocument()
   })
 
+  it('links a saved TV show to its TV details page', () => {
+    render(
+      <MemoryRouter>
+        <PosterCard
+          movie={{
+            id: 42,
+            title: 'Test Show',
+            poster_path: null,
+            release_date: '2020-01-01',
+            media_type: 'tv',
+          }}
+        />
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByRole('link', { name: /test show/i })).toHaveAttribute(
+      'href',
+      '/tv/42',
+    )
+    expect(screen.getByText('2020')).toBeInTheDocument()
+  })
+
   it('falls back to the film icon when the poster fails', () => {
     render(
       <MemoryRouter>

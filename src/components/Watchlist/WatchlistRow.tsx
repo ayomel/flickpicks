@@ -1,12 +1,11 @@
 import { MediaRow } from '@/components/Row/MediaRow'
 import { PosterCard } from '@/components/Row/PosterCard'
-import { useWatchlistMovies } from '@/hooks/useWatchlistQuery'
+import { useWatchlistTitles } from '@/hooks/useWatchlistQuery'
 
 export const WatchlistRow = () => {
-  const { tmdbIds, movies, isLoadingMovies, isError, entriesQuery } =
-    useWatchlistMovies()
+  const { titles, isLoadingTitles, isError, entriesQuery } = useWatchlistTitles()
 
-  if (!isLoadingMovies && tmdbIds.length === 0) {
+  if (!isLoadingTitles && titles.length === 0) {
     return null
   }
 
@@ -14,21 +13,21 @@ export const WatchlistRow = () => {
     <MediaRow
       label="Your watchlist"
       title="Saved to watch"
-      items={movies}
-      getKey={(movie) => movie.id}
-      isLoading={isLoadingMovies}
+      items={titles}
+      getKey={(title) => `${title.media_type}:${title.id}`}
+      isLoading={isLoadingTitles}
       isError={isError}
       errorMessage="Couldn't load your watchlist."
       footer={
-        !isLoadingMovies && !isError && entriesQuery.data?.length ? (
+        !isLoadingTitles && !isError && entriesQuery.data?.length ? (
           <p className="mt-4 font-mono text-xs text-muted-foreground">
-            {movies.length} title{movies.length === 1 ? '' : 's'}
+            {titles.length} title{titles.length === 1 ? '' : 's'}
           </p>
         ) : null
       }
-      renderItem={(movie, { tabIndex, onFocus, eager }) => (
+      renderItem={(title, { tabIndex, onFocus, eager }) => (
         <PosterCard
-          movie={movie}
+          movie={title}
           tabIndex={tabIndex}
           onFocus={onFocus}
           eager={eager}
