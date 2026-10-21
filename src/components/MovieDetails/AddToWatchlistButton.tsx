@@ -2,20 +2,23 @@ import { Check, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAddToWatchlistMutation } from '@/hooks/useAddToWatchlistMutation'
 import { useRemoveFromWatchlistMutation } from '@/hooks/useRemoveFromWatchlistMutation'
-import { useIsMovieOnWatchlist } from '@/hooks/useWatchlistQuery'
+import { useIsOnWatchlist } from '@/hooks/useWatchlistQuery'
 import { cn } from '@/lib/utils'
+import type { WatchlistMediaType } from '@/types/watchlist'
 
 type AddToWatchlistButtonProps = {
-  movieId: number
+  tmdbId: number
+  mediaType?: WatchlistMediaType
   addLabel?: string
 }
 
 export const AddToWatchlistButton = ({
-  movieId,
+  tmdbId,
+  mediaType = 'movie',
   addLabel = 'Add to watchlist',
 }: AddToWatchlistButtonProps) => {
   const { isOnWatchlist, isLoading: watchlistLoading } =
-    useIsMovieOnWatchlist(movieId)
+    useIsOnWatchlist(tmdbId, mediaType)
   const addMutation = useAddToWatchlistMutation()
   const removeMutation = useRemoveFromWatchlistMutation()
 
@@ -38,9 +41,9 @@ export const AddToWatchlistButton = ({
 
   const handlePress = () => {
     if (isOnWatchlist) {
-      removeMutation.mutate(movieId)
+      removeMutation.mutate({ tmdb_id: tmdbId, media_type: mediaType })
     } else {
-      addMutation.mutate(movieId)
+      addMutation.mutate({ tmdb_id: tmdbId, media_type: mediaType })
     }
   }
 

@@ -16,7 +16,7 @@ export const MovieActions = ({ movie }: MovieActionsProps) => {
         <Info data-icon="inline-start" />
         More info
       </Link>
-      <AddToWatchlistButton movieId={movie.id} addLabel="Watchlist" />
+      <AddToWatchlistButton tmdbId={movie.id} addLabel="Watchlist" />
     </div>
   )
 }

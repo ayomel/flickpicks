@@ -7,17 +7,17 @@ import { WatchlistRow } from '@/components/Watchlist/WatchlistRow'
 import { Seo } from '@/components/Seo'
 import { useTrendingQuery } from '@/hooks/useTrendingQuery'
 import { useUpcomingQuery } from '@/hooks/useUpcomingQuery'
-import { useWatchlistMovies } from '@/hooks/useWatchlistQuery'
+import { useWatchlistTitles } from '@/hooks/useWatchlistQuery'
 import { absoluteUrl } from '@/utils/seo'
 
 export const Home = () => {
   const location = useLocation()
   const trendingQuery = useTrendingQuery()
   const upcomingQuery = useUpcomingQuery()
-  const { isLoadingMovies, movies } = useWatchlistMovies()
+  const { isLoadingTitles, titles } = useWatchlistTitles()
 
   const rowsSettled =
-    !trendingQuery.isLoading && !upcomingQuery.isLoading && !isLoadingMovies
+    !trendingQuery.isLoading && !upcomingQuery.isLoading && !isLoadingTitles
 
   useEffect(() => {
     if (location.hash !== '#watchlist') return
@@ -31,7 +31,7 @@ export const Home = () => {
     })
 
     return () => window.cancelAnimationFrame(frame)
-  }, [location.hash, rowsSettled, movies.length])
+  }, [location.hash, rowsSettled, titles.length])
 
   return (
     <div className="min-h-svh bg-background">

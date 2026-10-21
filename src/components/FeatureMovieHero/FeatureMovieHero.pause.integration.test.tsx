@@ -57,7 +57,7 @@ vi.mock('@/hooks/useTrendingQuery', () => ({
 }))
 
 vi.mock('@/hooks/useWatchlistQuery', () => ({
-  useIsMovieOnWatchlist: () => ({ isOnWatchlist: false, isLoading: false }),
+  useIsOnWatchlist: () => ({ isOnWatchlist: false, isLoading: false }),
 }))
 
 vi.mock('@/hooks/useAddToWatchlistMutation', () => ({

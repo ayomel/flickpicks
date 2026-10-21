@@ -14,6 +14,7 @@ export type PosterCardMovie = {
   title: string
   poster_path: string | null
   release_date?: string
+  media_type?: string
 }
 
 type PosterCardProps = {
@@ -39,7 +40,7 @@ export const PosterCard = ({
 
   return (
     <Link
-      to={`/movies/${movie.id}`}
+      to={movie.media_type === 'tv' ? `/tv/${movie.id}` : `/movies/${movie.id}`}
       tabIndex={tabIndex}
       onFocus={onFocus}
       className={cn(

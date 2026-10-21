@@ -4,6 +4,7 @@ import { useTvDetailsQuery } from '@/hooks/useTvDetailsQuery'
 import { TvHero } from '@/components/TvDetails/TvHero'
 import { MovieOverview } from '@/components/MovieDetails/MovieOverview'
 import { TvDetailsInfo } from '@/components/TvDetails/TvDetailsInfo'
+import { AddToWatchlistButton } from '@/components/MovieDetails/AddToWatchlistButton'
 import { MovieDetailsSkeleton } from '@/components/MovieDetails/MovieDetailsSkeleton'
 import { MovieDetailsError } from '@/components/MovieDetails/MovieDetailsError'
 import { Seo } from '@/components/Seo'
@@ -53,6 +54,9 @@ export const TvDetails = () => {
         <div className="mx-auto grid w-full max-w-6xl gap-10 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-start xl:grid-cols-[minmax(0,1fr)_18rem]">
           <div className="flex min-w-0 flex-col gap-8">
             <MovieOverview overview={data.overview} />
+            <div className="flex flex-wrap gap-3">
+              <AddToWatchlistButton tmdbId={data.id} mediaType="tv" />
+            </div>
           </div>
 
           <TvDetailsInfo show={data} />
