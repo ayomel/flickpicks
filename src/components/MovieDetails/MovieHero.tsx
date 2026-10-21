@@ -7,6 +7,7 @@ import { MovieHeroOverlays } from './MovieHeroOverlays'
 import { MovieMetadata } from './MovieMetadata'
 import { MovieOverview } from './MovieOverview'
 import { TrailerPlayer } from './TrailerPlayer'
+import { MovieWatchLink } from './MovieWatchLink'
 import { AddToWatchlistButton } from './AddToWatchlistButton'
 import { detailPageShell } from './detailPageLayout'
 
@@ -65,6 +66,7 @@ export const MovieHero = ({ movie }: MovieHeroProps) => {
               />
             </div>
             <div className="flex flex-wrap gap-3 pt-0.5">
+              <MovieWatchLink movieId={movie.id} />
               <TrailerPlayer
                 media={{
                   title: movie.title,
