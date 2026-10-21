@@ -5,6 +5,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { MovieHero } from './MovieHero'
 import type { MovieDetails } from '@/types/movieDetails'
 
+vi.mock('../../../services/apiClient', () => ({
+  apiClient: { get: vi.fn().mockResolvedValue({ data: [] }) },
+}))
+
 afterEach(() => {
   cleanup()
   vi.unstubAllEnvs()
@@ -42,7 +46,7 @@ const renderHero = () => {
 
 describe('MovieHero', () => {
   it('shows a back link, title, tagline, meta, and hero actions', () => {
-    vi.stubEnv('VITE_MOVIE_WATCH_BASE_URL', 'https://7movies.ac')
+    vi.stubEnv('VITE_WATCH_BASE_URL', 'https://7movies.ac')
     renderHero()
 
     expect(

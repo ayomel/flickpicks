@@ -21,6 +21,31 @@ export type TvNetwork = {
   origin_country: string
 }
 
+export type TvSeasonSummary = {
+  air_date: string | null
+  episode_count: number
+  id: number
+  name: string
+  overview: string
+  poster_path: string | null
+  season_number: number
+  vote_average: number
+}
+
+export type TvEpisode = {
+  id: number
+  episode_number: number
+  name: string
+  air_date: string | null
+  runtime: number | null
+  overview: string
+  season_number: number
+}
+
+export type TvSeason = Pick<TvSeasonSummary, 'id' | 'name' | 'season_number'> & {
+  episodes: TvEpisode[]
+}
+
 export type TvShow = {
   adult: boolean
   backdrop_path: string | null
@@ -45,6 +70,7 @@ export type TvShow = {
   poster_path: string | null
   production_companies: ProductionCompany[]
   production_countries: ProductionCountry[]
+  seasons?: TvSeasonSummary[]
   softcore: boolean
   spoken_languages: SpokenLanguage[]
   status: string

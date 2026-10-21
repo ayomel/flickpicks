@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { TvHero } from './TvHero'
 import type { TvDetails } from '@/types/tvDetails'
 
@@ -9,7 +9,8 @@ afterEach(() => {
 })
 
 describe('TvHero', () => {
-  it('does not render the movie watch action', () => {
+  it('links to the show watch page in a new tab', () => {
+    vi.stubEnv('VITE_WATCH_BASE_URL', 'https://7movies.ac')
     const show = {
       id: 1396,
       name: 'Breaking Bad',
@@ -29,8 +30,14 @@ describe('TvHero', () => {
       </MemoryRouter>,
     )
 
-    expect(
-      screen.queryByRole('link', { name: 'Play (opens in a new tab)' }),
-    ).not.toBeInTheDocument()
+    const playLink = screen.getByRole('link', {
+      name: 'Play (opens in a new tab)',
+    })
+    expect(playLink).toHaveAttribute(
+      'href',
+      'https://7movies.ac/tv/1396/watch',
+    )
+    expect(playLink).toHaveAttribute('target', '_blank')
+    expect(playLink).toHaveAttribute('rel', 'noopener noreferrer')
   })
 })
