@@ -48,7 +48,9 @@ export const extractYoutubeVideoId = (url: string) => {
   return null
 }
 
-export const resolveTrailerVideoId = (movie: MovieDetails) => {
+export const resolveTrailerVideoId = (
+  movie: Pick<MovieDetails, 'trailer' | 'videos'>,
+) => {
   if (movie.trailer) {
     const fromTrailer = extractYoutubeVideoId(movie.trailer)
     if (fromTrailer) return fromTrailer

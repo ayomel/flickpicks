@@ -18,7 +18,7 @@ const movie = {
 describe('TrailerPlayer', () => {
   it('opens a youtube-nocookie embed only after Play trailer is pressed', async () => {
     const user = userEvent.setup()
-    render(<TrailerPlayer movie={movie} />)
+    render(<TrailerPlayer media={movie} />)
 
     expect(screen.queryByTitle('The Matrix trailer')).not.toBeInTheDocument()
 
@@ -39,7 +39,7 @@ describe('TrailerPlayer', () => {
 
   it('closes on Escape', async () => {
     const user = userEvent.setup()
-    render(<TrailerPlayer movie={movie} />)
+    render(<TrailerPlayer media={movie} />)
 
     await user.click(screen.getByRole('button', { name: 'Play trailer' }))
     expect(await screen.findByTitle('The Matrix trailer')).toBeInTheDocument()
@@ -47,5 +47,39 @@ describe('TrailerPlayer', () => {
     await user.keyboard('{Escape}')
 
     expect(screen.queryByTitle('The Matrix trailer')).not.toBeInTheDocument()
+  })
+
+  it('plays a TV trailer from the video results using the show name', async () => {
+    const user = userEvent.setup()
+    render(
+      <TrailerPlayer
+        media={{
+          title: 'Breaking Bad',
+          videos: {
+            results: [
+              {
+                iso_639_1: 'en',
+                iso_3166_1: 'US',
+                name: 'Official trailer',
+                key: 'HhesaQXLuRY',
+                site: 'YouTube',
+                size: 1080,
+                type: 'Trailer',
+                official: true,
+                id: 'video-1',
+                published_at: '2008-01-20T00:00:00.000Z',
+              },
+            ],
+          },
+        }}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Play trailer' }))
+
+    expect(await screen.findByTitle('Breaking Bad trailer')).toHaveAttribute(
+      'src',
+      'https://www.youtube-nocookie.com/embed/HhesaQXLuRY?autoplay=1&rel=0',
+    )
   })
 })
