@@ -65,7 +65,13 @@ export const MovieHero = ({ movie }: MovieHeroProps) => {
               />
             </div>
             <div className="flex flex-wrap gap-3 pt-0.5">
-              <TrailerPlayer movie={movie} />
+              <TrailerPlayer
+                media={{
+                  title: movie.title,
+                  trailer: movie.trailer,
+                  videos: movie.videos,
+                }}
+              />
               <AddToWatchlistButton tmdbId={movie.id} />
             </div>
           </div>

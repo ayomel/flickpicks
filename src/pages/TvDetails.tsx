@@ -5,6 +5,7 @@ import { TvHero } from '@/components/TvDetails/TvHero'
 import { MovieOverview } from '@/components/MovieDetails/MovieOverview'
 import { TvDetailsInfo } from '@/components/TvDetails/TvDetailsInfo'
 import { AddToWatchlistButton } from '@/components/MovieDetails/AddToWatchlistButton'
+import { TrailerPlayer } from '@/components/MovieDetails/TrailerPlayer'
 import { MovieDetailsSkeleton } from '@/components/MovieDetails/MovieDetailsSkeleton'
 import { MovieDetailsError } from '@/components/MovieDetails/MovieDetailsError'
 import { Seo } from '@/components/Seo'
@@ -55,6 +56,13 @@ export const TvDetails = () => {
           <div className="flex min-w-0 flex-col gap-8">
             <MovieOverview overview={data.overview} />
             <div className="flex flex-wrap gap-3">
+              <TrailerPlayer
+                media={{
+                  title: data.name,
+                  trailer: data.trailer,
+                  videos: data.videos,
+                }}
+              />
               <AddToWatchlistButton tmdbId={data.id} mediaType="tv" />
             </div>
           </div>

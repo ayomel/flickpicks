@@ -6,11 +6,11 @@ import { resolveTrailerVideoId } from '@/utils/formatMovie'
 import { VideoModal } from './VideoModal'
 
 type TrailerPlayerProps = {
-  movie: MovieDetails
+  media: { title: string } & Pick<MovieDetails, 'trailer' | 'videos'>
 }
 
-export const TrailerPlayer = ({ movie }: TrailerPlayerProps) => {
-  const videoId = resolveTrailerVideoId(movie)
+export const TrailerPlayer = ({ media }: TrailerPlayerProps) => {
+  const videoId = resolveTrailerVideoId(media)
   const [open, setOpen] = useState(false)
 
   if (!videoId) return null
@@ -23,7 +23,7 @@ export const TrailerPlayer = ({ movie }: TrailerPlayerProps) => {
       </Button>
       <VideoModal
         videoId={videoId}
-        title={`${movie.title} trailer`}
+        title={`${media.title} trailer`}
         isOpen={open}
         onOpenChange={setOpen}
       />
