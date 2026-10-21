@@ -1,18 +1,52 @@
-# FlickPick (frontend)
+# FlickPick
 
-React + Vite SPA for browsing trending movies and a shared watchlist.
+FlickPick is a movie and TV discovery app. Browse trending titles, search both media types, open detail pages, watch trailers, and keep a mixed watchlist.
 
-- Live site: [flickpick.mel-2cb.workers.dev](https://flickpick.mel-2cb.workers.dev/)
-- API: [flickpicks.fastapicloud.dev](https://flickpicks.fastapicloud.dev/) via `VITE_API_URL`
+**Try it:** [Live app](https://flickpick.mel-2cb.workers.dev/) · [API docs](https://flickpicks.fastapicloud.dev/docs)
 
-## Local development
+## Product tour
+
+Search returns movies and TV shows together, with each result labeled by type and routed to the matching detail page. Detail pages bring together title information, trailers, and watch options where available. Add either movies or shows to the shared watchlist and return to them from the home page.
+
+TV show detail pages include trailer playback, merged in [PR #25](https://github.com/ayomel/flickpicks/pull/25).
+
+### Browse and search
+
+![FlickPick browse and combined movie and TV search](https://github.com/user-attachments/assets/171fcf09-a5c8-4be3-bf79-ac0e1e3b1e67)
+
+### Title details
+
+![FlickPick title detail page with trailer playback](https://github.com/user-attachments/assets/c66e5843-8582-4ba0-9b07-18899738d6dd)
+
+### Mixed movie and TV watchlist
+
+![FlickPick watchlist containing movies and a TV show](https://github.com/user-attachments/assets/0de05b7b-2123-47a0-b8cb-039778d60992)
+
+## Architecture
+
+The browser runs the React single-page app served from Cloudflare Workers. It calls the FastAPI service using `VITE_API_URL`; the service integrates with TMDB for catalog data. Cloudflare's dashboard Git integration deploys the frontend Worker from this repository.
+
+```mermaid
+flowchart LR
+  Visitor --> Worker[Cloudflare Worker<br/>serves React app]
+  Worker --> Browser[React + TypeScript SPA]
+  Browser -->|VITE_API_URL| API[FastAPI service]
+  API --> TMDB[TMDB API]
+  GitHub[GitHub repository] -->|Git integration| Worker
+```
+
+The frontend supports direct links to movie and TV detail pages. The Worker serves the app shell for those routes so the client router can load the matching page; unknown routes return an HTTP 404 with the app shell.
+
+## Run locally
+
+Requirements: Node.js and pnpm.
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-Set `VITE_API_URL` to `https://flickpicks.fastapicloud.dev/` (see `.env`).
+Set `VITE_API_URL` to `https://flickpicks.fastapicloud.dev/` (see `.env`). Available checks and build commands:
 
 ```bash
 pnpm lint
@@ -22,17 +56,17 @@ pnpm build
 pnpm preview
 ```
 
-## Deploy (Cloudflare Workers Git integration)
+## Deployment and routing
 
-Production deploys through the Cloudflare dashboard Git integration for the `flickpick` Worker. There is no CI pipeline in this repo.
+Production deploys through the Cloudflare dashboard Git integration for the `flickpick` Worker. `wrangler.jsonc` configures the Worker name, the `./dist` build output, and single-page-app asset handling. CI is planned separately and does not deploy the application.
 
-`wrangler.jsonc` is the config that integration uses:
-
-- Worker name: `flickpick` (same as the live script on `mel-2cb.workers.dev`)
-- Assets directory: `./dist` (Vite build output)
-- `not_found_handling`: `single-page-application` (same SPA fallback the live Worker uses today)
-
-The Worker script returns HTTP 404 for unknown paths while still serving `index.html`, so the client `NotFound` page can render. Valid `/`, `/movies/:digits`, and `/tv/:digits` deep links stay on 200.
+| Path | HTTP status | Response |
+| --- | --- | --- |
+| `/` | 200 | `index.html` |
+| `/movies/:digits` | 200 | `index.html` |
+| `/tv/:digits` | 200 | `index.html` |
+| Unknown paths | 404 | App shell, then the client `NotFound` page |
+| `/assets/*` | 200 | Hashed static assets |
 
 Optional local packaging check (does not publish):
 
@@ -40,12 +74,10 @@ Optional local packaging check (does not publish):
 pnpm deploy:dry
 ```
 
-## Edge routing
+## Case study
 
-| Path          | HTTP status | Body                                |
-| ------------- | ----------- | ----------------------------------- |
-| `/`           | 200         | `index.html`                        |
-| `/movies/123` | 200         | `index.html`                        |
-| `/tv/123`     | 200         | `index.html`                        |
-| other paths   | 404         | `index.html` (SPA shell / NotFound) |
-| `/assets/*`   | 200         | hashed static files                 |
+See [docs/portfolio-case-study.md](docs/portfolio-case-study.md) for a hiring-manager-oriented overview of the product and engineering work.
+
+## Attribution
+
+This product uses the TMDB API but is not endorsed or certified by TMDB.
