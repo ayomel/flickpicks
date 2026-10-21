@@ -1,15 +1,9 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  type FocusEventHandler,
-  type KeyboardEvent,
-  type ReactNode,
-} from 'react'
+import type { FocusEventHandler, ReactNode } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { SectionLabel } from '@/components/ui/section-label'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useMediaRowNavigation } from '@/hooks/useMediaRowNavigation'
 import { cn } from '@/lib/utils'
 import {
   detailPageShell,
@@ -125,88 +119,21 @@ export function MediaRow<T>({
   eagerCount = 0,
   detailGutter = false,
 }: MediaRowProps<T>) {
-  const listRef = useRef<HTMLUListElement>(null)
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [canScrollLeft, setCanScrollLeft] = useState(false)
-  const [canScrollRight, setCanScrollRight] = useState(false)
   const itemCount = items.length
   const isEmpty = !isLoading && !isError && itemCount === 0
+  const {
+    activeIndex,
+    canScrollLeft,
+    canScrollRight,
+    listRef,
+    onItemFocus,
+    onListKeyDown,
+    scrollByCards,
+  } = useMediaRowNavigation({
+    itemCount,
+    enabled: !isLoading && !isError && !isEmpty,
+  })
   const skipId = `after-${label}-${title}`.toLowerCase().replace(/\s+/g, '-')
-
-  const updateScrollState = () => {
-    const list = listRef.current
-    if (!list) return
-    const maxScroll = list.scrollWidth - list.clientWidth
-    const nextLeft = list.scrollLeft > 1
-    const nextRight = maxScroll > 1 && list.scrollLeft < maxScroll - 1
-    setCanScrollLeft((prev) => (prev === nextLeft ? prev : nextLeft))
-    setCanScrollRight((prev) => (prev === nextRight ? prev : nextRight))
-  }
-
-  useEffect(() => {
-    if (isLoading || isError || isEmpty) return
-    const list = listRef.current
-    if (!list) return
-
-    updateScrollState()
-    list.addEventListener('scroll', updateScrollState, { passive: true })
-    const observer = new ResizeObserver(updateScrollState)
-    observer.observe(list)
-
-    return () => {
-      list.removeEventListener('scroll', updateScrollState)
-      observer.disconnect()
-    }
-  }, [isLoading, isError, isEmpty, itemCount])
-
-  const scrollByCards = (direction: 1 | -1) => {
-    const list = listRef.current
-    if (!list) return
-    const delta = Math.max(200, Math.floor(list.clientWidth * 0.8))
-    list.scrollBy({ left: direction * delta, behavior: 'smooth' })
-  }
-
-  const focusItem = (index: number) => {
-    if (itemCount === 0) return
-    const nextIndex = Math.min(itemCount - 1, Math.max(0, index))
-    setActiveIndex((prev) => (prev === nextIndex ? prev : nextIndex))
-    const item = listRef.current?.querySelector(
-      `[data-row-index="${nextIndex}"]`,
-    )
-    const target =
-      item instanceof HTMLElement
-        ? (item.querySelector<HTMLElement>('a[href], button, [tabindex]') ??
-          item)
-        : null
-    target?.focus()
-    target?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'nearest',
-      inline: 'nearest',
-    })
-  }
-
-  const onListKeyDown = (event: KeyboardEvent<HTMLUListElement>) => {
-    if (event.key === 'ArrowRight') {
-      event.preventDefault()
-      focusItem(activeIndex + 1)
-      return
-    }
-    if (event.key === 'ArrowLeft') {
-      event.preventDefault()
-      focusItem(activeIndex - 1)
-      return
-    }
-    if (event.key === 'Home') {
-      event.preventDefault()
-      focusItem(0)
-      return
-    }
-    if (event.key === 'End') {
-      event.preventDefault()
-      focusItem(itemCount - 1)
-    }
-  }
 
   return (
     <section className={cn('relative z-10 py-8', className)}>
@@ -276,8 +203,7 @@ export function MediaRow<T>({
                 >
                   {renderItem(item, {
                     tabIndex: index === activeIndex ? 0 : -1,
-                    onFocus: () =>
-                      setActiveIndex((prev) => (prev === index ? prev : index)),
+                    onFocus: () => onItemFocus(index),
                     eager: index < eagerCount,
                   })}
                 </li>
