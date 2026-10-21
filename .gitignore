@@ -27,3 +27,5 @@ dist-ssr
 
 flickpick-screenshots/
 coverage/
+
+.env
