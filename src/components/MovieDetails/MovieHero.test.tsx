@@ -1,12 +1,13 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter } from 'react-router-dom'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { MovieHero } from './MovieHero'
 import type { MovieDetails } from '@/types/movieDetails'
 
 afterEach(() => {
   cleanup()
+  vi.unstubAllEnvs()
 })
 
 const movie = {
@@ -41,6 +42,7 @@ const renderHero = () => {
 
 describe('MovieHero', () => {
   it('shows a back link, title, tagline, meta, and hero actions', () => {
+    vi.stubEnv('VITE_MOVIE_WATCH_BASE_URL', 'https://7movies.ac')
     renderHero()
 
     expect(
