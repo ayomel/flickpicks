@@ -8,8 +8,6 @@ FlickPick is a movie and TV discovery app. Browse trending titles, search both m
 
 Search returns movies and TV shows together, with each result labeled by type and routed to the matching detail page. Detail pages bring together title information, trailers, and watch options where available. Add either movies or shows to the shared watchlist and return to them from the home page.
 
-TV show detail pages include trailer playback, merged in [PR #25](https://github.com/ayomel/flickpicks/pull/25).
-
 ### Browse and search
 
 ![FlickPick browse and combined movie and TV search](https://github.com/user-attachments/assets/171fcf09-a5c8-4be3-bf79-ac0e1e3b1e67)
