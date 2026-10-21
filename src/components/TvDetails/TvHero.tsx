@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 import { HeroBackdrop } from '@/components/MovieDetails/HeroBackdrop'
 import { MovieHeroOverlays } from '@/components/MovieDetails/MovieHeroOverlays'
 import { TvMetadata } from './TvMetadata'
+import { TvWatchLink } from './TvWatchLink'
 
 type TvHeroProps = {
   show: TvDetails
@@ -57,7 +58,10 @@ export const TvHero = ({ show }: TvHeroProps) => {
           )}
         >
           <div className="relative max-lg:pt-20">
-            <TvMetadata show={show} />
+            <div className="flex flex-col gap-4">
+              <TvMetadata show={show} />
+              <TvWatchLink showId={show.id} />
+            </div>
           </div>
         </div>
       </div>

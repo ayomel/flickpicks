@@ -44,8 +44,8 @@ pnpm install
 pnpm dev
 ```
 
-Set `VITE_API_URL` to `https://flickpicks.fastapicloud.dev/` and `VITE_MOVIE_WATCH_BASE_URL` to the HTTPS
-base URL for movie watch pages (for example, `https://7movies.ac`). These values are read at build time. Available
+Set `VITE_API_URL` to `https://flickpicks.fastapicloud.dev/` and `VITE_WATCH_BASE_URL` to the HTTPS
+base URL for movie and TV watch pages (for example, `https://7movies.ac`). These values are read at build time. Available
 checks and build commands:
 
 ```bash
