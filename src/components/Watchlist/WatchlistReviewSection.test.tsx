@@ -6,6 +6,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { apiClient } from '../../../services/apiClient'
 import { WatchlistReviewSection } from './WatchlistReviewSection'
@@ -44,6 +45,7 @@ const renderSection = (mediaType: 'movie' | 'tv') => {
         tmdbId={42}
         mediaType={mediaType}
         title={mediaType === 'tv' ? 'Test show' : 'Test movie'}
+        posterPath="/test-poster.jpg"
       />
     </QueryClientProvider>,
   )
@@ -51,6 +53,71 @@ const renderSection = (mediaType: 'movie' | 'tv') => {
 }
 
 describe('WatchlistReviewSection', () => {
+  it('keeps title context while adding, marking watched, and reviewing a movie', async () => {
+    const user = userEvent.setup()
+    const wantEntry = {
+      id: 7,
+      tmdb_id: 42,
+      media_type: 'movie',
+      status: 'want',
+      rating: null,
+      review: '',
+      added_by: '',
+      created_at: '',
+      updated_at: 'before',
+    }
+    const watchedEntry = {
+      ...wantEntry,
+      status: 'watched',
+      updated_at: 'after',
+    }
+    vi.mocked(apiClient.get)
+      .mockResolvedValueOnce({ data: [] })
+      .mockResolvedValueOnce({ data: [wantEntry] })
+      .mockResolvedValue({ data: [watchedEntry] })
+    vi.mocked(apiClient.post).mockResolvedValue({ data: wantEntry })
+    vi.mocked(apiClient.patch).mockResolvedValue({ data: watchedEntry })
+    const client = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
+    render(
+      <QueryClientProvider client={client}>
+        <WatchlistReviewSection
+          tmdbId={42}
+          mediaType="movie"
+          title="Test movie"
+          posterPath="/test-movie.jpg"
+        />
+      </QueryClientProvider>,
+    )
+
+    await user.click(
+      await screen.findByRole('button', { name: 'Add to watchlist' }),
+    )
+    expect(
+      await screen.findByRole('button', { name: 'Mark as watched' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('img', { name: 'Test movie poster' }),
+    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(apiClient.post).toHaveBeenCalledWith('/entry', {
+        tmdb_id: 42,
+        media_type: 'movie',
+        status: 'want',
+      }),
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Mark as watched' }))
+    expect(
+      await screen.findByRole('textbox', { name: 'Your review' }),
+    ).toBeInTheDocument()
+    expect(apiClient.patch).toHaveBeenCalledWith('/entry/7', {
+      status: 'watched',
+    })
+    client.clear()
+  })
+
   it('shows the review editor after marking a saved title watched', async () => {
     const wantEntry = {
       id: 2,
@@ -77,7 +144,12 @@ describe('WatchlistReviewSection', () => {
     })
     render(
       <QueryClientProvider client={client}>
-        <WatchlistReviewSection tmdbId={42} mediaType="tv" title="Test show" />
+        <WatchlistReviewSection
+          tmdbId={42}
+          mediaType="tv"
+          title="Test show"
+          posterPath="/test-poster.jpg"
+        />
       </QueryClientProvider>,
     )
 
@@ -101,6 +173,9 @@ describe('WatchlistReviewSection', () => {
       ),
     )
     expect(screen.getByRole('radio', { name: '7 out of 10' })).toBeChecked()
+    expect(
+      screen.getByRole('img', { name: 'Test show poster' }),
+    ).toBeInTheDocument()
     client.clear()
   })
 

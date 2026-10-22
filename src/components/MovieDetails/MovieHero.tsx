@@ -8,7 +8,6 @@ import { MovieMetadata } from './MovieMetadata'
 import { MovieOverview } from './MovieOverview'
 import { TrailerPlayer } from './TrailerPlayer'
 import { MovieWatchLink } from './MovieWatchLink'
-import { AddToWatchlistButton } from './AddToWatchlistButton'
 import { detailPageShell } from './detailPageLayout'
 
 type MovieHeroProps = {
@@ -74,7 +73,6 @@ export const MovieHero = ({ movie }: MovieHeroProps) => {
                   videos: movie.videos,
                 }}
               />
-              <AddToWatchlistButton tmdbId={movie.id} />
             </div>
           </div>
         </div>
