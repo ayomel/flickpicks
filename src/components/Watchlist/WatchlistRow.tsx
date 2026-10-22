@@ -1,53 +1,104 @@
 import { MediaRow } from '@/components/Row/MediaRow'
 import { PosterCard } from '@/components/Row/PosterCard'
-import { useWatchlistTitles } from '@/hooks/useWatchlistQuery'
+import {
+  useWatchlistTitles,
+  type WatchlistTitle,
+} from '@/hooks/useWatchlistQuery'
+import type { WatchlistStatus } from '@/types/watchlist'
 import { WatchlistReviewDialog } from './WatchlistReviewDialog'
+
+const emptyTitles: WatchlistTitle[] = []
 
 export const WatchlistRow = () => {
   const { titles, isLoadingTitles, isError, entriesQuery } =
     useWatchlistTitles()
+  const entriesByTitle = new Map(
+    (entriesQuery.data ?? []).map((entry) => [
+      `${entry.media_type}:${entry.tmdb_id}`,
+      entry,
+    ]),
+  )
+  const titlesWithEntries = titles.flatMap((title) => {
+    const entry = entriesByTitle.get(`${title.media_type}:${title.id}`)
+    return entry ? [{ title, entry }] : []
+  })
 
-  if (!isLoadingTitles && titles.length === 0) {
-    return null
-  }
+  const renderSection = (
+    status: WatchlistStatus,
+    label: string,
+    title: string,
+  ) => {
+    const sectionTitles = titlesWithEntries.filter(
+      ({ entry }) => entry.status === status,
+    )
 
-  return (
-    <MediaRow
-      label="Your watchlist"
-      title="Saved to watch"
-      items={titles}
-      getKey={(title) => `${title.media_type}:${title.id}`}
-      isLoading={isLoadingTitles}
-      isError={isError}
-      errorMessage="Couldn't load your watchlist."
-      footer={
-        !isLoadingTitles && !isError && entriesQuery.data?.length ? (
+    if (sectionTitles.length === 0) return null
+
+    return (
+      <MediaRow
+        label={label}
+        title={title}
+        items={sectionTitles}
+        getKey={({ title: itemTitle }) =>
+          `${itemTitle.media_type}:${itemTitle.id}`
+        }
+        footer={
           <p className="mt-4 font-mono text-xs text-muted-foreground">
-            {titles.length} title{titles.length === 1 ? '' : 's'}
+            {sectionTitles.length} title
+            {sectionTitles.length === 1 ? '' : 's'}
           </p>
-        ) : null
-      }
-      renderItem={(title, { tabIndex, onFocus, eager }) => {
-        const entry = entriesQuery.data?.find(
-          (candidate) =>
-            candidate.tmdb_id === title.id &&
-            candidate.media_type === title.media_type,
-        )
-
-        return (
+        }
+        renderItem={(
+          { title: itemTitle, entry },
+          { tabIndex, onFocus, eager },
+        ) => (
           <div className="w-36 shrink-0 sm:w-40">
             <PosterCard
-              movie={title}
+              movie={itemTitle}
               tabIndex={tabIndex}
               onFocus={onFocus}
               eager={eager}
             />
-            {entry ? (
-              <WatchlistReviewDialog entry={entry} title={title.title} />
-            ) : null}
+            <WatchlistReviewDialog entry={entry} title={itemTitle.title} />
           </div>
-        )
-      }}
-    />
+        )}
+      />
+    )
+  }
+
+  if (isLoadingTitles) {
+    return (
+      <MediaRow
+        label="Your watchlist"
+        title="Saved to watch"
+        items={emptyTitles}
+        getKey={(title) => `${title.media_type}:${title.id}`}
+        isLoading
+        renderItem={() => null}
+      />
+    )
+  }
+
+  if (isError) {
+    return (
+      <MediaRow
+        label="Your watchlist"
+        title="Saved to watch"
+        items={emptyTitles}
+        getKey={(title) => `${title.media_type}:${title.id}`}
+        isError
+        errorMessage="Couldn't load your watchlist."
+        renderItem={() => null}
+      />
+    )
+  }
+
+  if (titlesWithEntries.length === 0) return null
+
+  return (
+    <>
+      {renderSection('want', 'Your watchlist', 'Saved to watch')}
+      {renderSection('watched', 'Your history', 'Already watched')}
+    </>
   )
 }
