@@ -1,5 +1,7 @@
 # FlickPick
 
+[![CI](https://github.com/ayomel/flickpicks/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ayomel/flickpicks/actions/workflows/ci.yml)
+
 FlickPick helps you discover movies and TV shows. Browse trending titles, search both, view details and trailers, and save titles to an anonymous watchlist for this browser.
 
 **Try it:** [Live app](https://flickpick.mel-2cb.workers.dev/) · [Frontend repository](https://github.com/ayomel/flickpicks) · [API repository](https://github.com/ayomel/flickpicks-api) · [API docs](https://flickpicks.fastapicloud.dev/docs)
@@ -56,7 +58,7 @@ pnpm preview
 
 ## Deployment and routing
 
-The `flickpick` Worker deploys through Cloudflare's dashboard Git integration. `wrangler.jsonc` sets the Worker name, the `./dist` build output, and single-page-app asset handling. CI is planned separately and does not deploy the application.
+The `flickpick` Worker deploys through Cloudflare's dashboard Git integration. `wrangler.jsonc` sets the Worker name, the `./dist` build output, and single-page-app asset handling. GitHub Actions runs lint, typecheck, tests, and build on pushes and pull requests targeting `main`; it does not deploy the application.
 
 | Path | HTTP status | Response |
 | --- | --- | --- |
