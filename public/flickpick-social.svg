@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" fill="none">
+  <defs>
+    <linearGradient id="background" x1="40" y1="30" x2="1180" y2="640" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#191919" />
+      <stop offset=".58" stop-color="#111112" />
+      <stop offset="1" stop-color="#241312" />
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientTransform="matrix(330 270 -210 257 1055 324)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D42A20" stop-opacity=".34" />
+      <stop offset="1" stop-color="#D42A20" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="posterA" x1="882" y1="142" x2="1116" y2="496" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5E2625" />
+      <stop offset="1" stop-color="#211818" />
+    </linearGradient>
+    <linearGradient id="posterB" x1="1004" y1="104" x2="1240" y2="460" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#302B3A" />
+      <stop offset="1" stop-color="#171719" />
+    </linearGradient>
+    <linearGradient id="posterC" x1="844" y1="205" x2="1044" y2="534" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#454031" />
+      <stop offset="1" stop-color="#1A1917" />
+    </linearGradient>
+    <filter id="shadow" x="810" y="80" width="470" height="510" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="22" />
+      <feOffset dy="16" />
+      <feComponentTransfer><feFuncA type="linear" slope=".34" /></feComponentTransfer>
+      <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+  </defs>
+  <rect width="1280" height="640" fill="url(#background)" />
+  <rect width="1280" height="640" fill="url(#glow)" />
+  <path d="M0 510C196 430 320 482 491 420s265-79 413-44" stroke="#fff" stroke-opacity=".035" stroke-width="2" />
+  <path d="M0 552C196 472 320 524 491 462s265-79 413-44" stroke="#fff" stroke-opacity=".025" stroke-width="2" />
+  <path d="M0 594C196 514 320 566 491 504s265-79 413-44" stroke="#fff" stroke-opacity=".02" stroke-width="2" />
+  <rect x="72" y="76" width="10" height="10" transform="rotate(45 72 76)" fill="#FF5A4E" />
+  <text x="98" y="89" fill="#F4F4F4" font-family="Inter, Arial, sans-serif" font-size="25" font-weight="750" letter-spacing="-.8">FlickPick</text>
+  <text x="72" y="231" fill="#F3F3F3" font-family="Inter, Arial, sans-serif" font-size="70" font-weight="800" letter-spacing="-3.2">Find your</text>
+  <text x="72" y="310" fill="#F3F3F3" font-family="Inter, Arial, sans-serif" font-size="70" font-weight="800" letter-spacing="-3.2">next favorite.</text>
+  <rect x="72" y="351" width="58" height="5" rx="2.5" fill="#FF5A4E" />
+  <text x="72" y="408" fill="#C8C8C8" font-family="Inter, Arial, sans-serif" font-size="25" font-weight="450">Movies, TV, and trailers for your next pick.</text>
+  <text x="72" y="470" fill="#909090" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="3.2">DISCOVER  ·  SAVE  ·  WATCH</text>
+  <g filter="url(#shadow)">
+    <g transform="rotate(-11 927 333)">
+      <rect x="830" y="156" width="196" height="318" rx="16" fill="url(#posterC)" stroke="#FFF" stroke-opacity=".12" stroke-width="2" />
+      <circle cx="928" cy="283" r="57" fill="#E4AF63" fill-opacity=".78" />
+      <path d="M830 366c47-68 77-39 112-103 39 70 49 42 84 91v104H830V366Z" fill="#18191A" fill-opacity=".74" />
+      <path d="M846 190h54" stroke="#FFF" stroke-opacity=".48" stroke-width="5" stroke-linecap="round" />
+      <path d="M847 438h82" stroke="#FFF" stroke-opacity=".3" stroke-width="4" stroke-linecap="round" />
+    </g>
+    <g transform="rotate(8 1086 325)">
+      <rect x="977" y="117" width="207" height="336" rx="16" fill="url(#posterB)" stroke="#FFF" stroke-opacity=".16" stroke-width="2" />
+      <circle cx="1081" cy="246" r="54" fill="#FF5A4E" fill-opacity=".8" />
+      <path d="M978 335c39-51 62-43 105-95 41 54 72 65 100 98v99H978v-102Z" fill="#171719" fill-opacity=".82" />
+      <path d="M995 151h68" stroke="#FFF" stroke-opacity=".5" stroke-width="5" stroke-linecap="round" />
+      <path d="M995 419h94" stroke="#FFF" stroke-opacity=".3" stroke-width="4" stroke-linecap="round" />
+    </g>
+    <g transform="rotate(-2 1177 390)">
+      <rect x="1088" y="248" width="157" height="259" rx="14" fill="url(#posterA)" stroke="#FFF" stroke-opacity=".15" stroke-width="2" />
+      <circle cx="1166" cy="344" r="42" fill="#D9B498" fill-opacity=".8" />
+      <path d="M1089 420c37-44 57-33 78-81 29 49 49 49 77 75v79h-155v-73Z" fill="#171515" fill-opacity=".82" />
+      <path d="M1103 275h46" stroke="#FFF" stroke-opacity=".48" stroke-width="4" stroke-linecap="round" />
+    </g>
+  </g>
+  <circle cx="1153" cy="535" r="26" fill="#D42A20" />
+  <path d="m1153 520 15 15-15 15-15-15 15-15Z" fill="#FFF" />
+</svg>

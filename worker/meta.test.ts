@@ -53,9 +53,11 @@ describe('movie meta helpers', () => {
         selector: string,
         handlers: {
           element: (el: {
+            getAttribute?: (name: string) => string | null
             setInnerContent?: (v: string) => void
             setAttribute?: (name: string, value: string) => void
             append?: (html: string, opts: { html: boolean }) => void
+            remove?: () => void
           }) => void
         },
       ) {
@@ -63,8 +65,10 @@ describe('movie meta helpers', () => {
           handlers.element({ setAttribute })
         } else {
           handlers.element({
+            getAttribute: () => null,
             setInnerContent: () => {},
             append: () => {},
+            remove: () => {},
           })
         }
         return this

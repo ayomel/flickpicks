@@ -4,37 +4,68 @@ import type { Env } from './index'
 import { escapeHtml } from './meta'
 
 const SHELL_HTML =
-  '<!doctype html><html><head><title>FlickPick</title><meta name="description" content="Browse trending movies, coming soon titles, and a shared watchlist." /></head><body><div id="root"></div></body></html>'
+  '<!doctype html><html><head><title>FlickPick</title><meta name="description" content="Discover movies and TV shows, find your next favorite, and save it to your watchlist." /><meta property="og:type" content="website" /><meta property="og:title" content="FlickPick · Movies and TV" /><meta property="og:description" content="Discover movies and TV shows, find your next favorite, and save it to your watchlist." /><meta property="og:image" content="https://flickpick.mel-2cb.workers.dev/flickpick-social.png" /><meta property="og:image:width" content="1280" /><meta property="og:image:height" content="640" /><meta property="og:image:alt" content="FlickPick movie and TV discovery" /><meta property="og:url" content="https://flickpick.mel-2cb.workers.dev/" /><meta name="twitter:card" content="summary_large_image" /></head><body><div id="root"></div></body></html>'
+
+type TestElement = {
+  getAttribute?: (name: string) => string | null
+  setAttribute?: (name: string, value: string) => void
+  setInnerContent?: (value: string) => void
+  append?: (html: string, opts: { html: boolean }) => void
+  remove?: () => void
+}
 
 class FakeHTMLRewriter {
-  private titleHandler?: {
-    element: (el: { setInnerContent: (v: string) => void }) => void
-  }
-  private descriptionHandler?: {
-    element: (el: {
-      setAttribute: (name: string, value: string) => void
-    }) => void
-  }
-  private headHandler?: {
-    element: (el: {
-      append: (html: string, opts: { html: boolean }) => void
-    }) => void
-  }
+  private handlers = new Map<string, { element: (el: TestElement) => void }>()
 
-  on(selector: string, handlers: { element: (el: never) => void }) {
-    if (selector === 'title') this.titleHandler = handlers
-    if (selector === 'meta[name="description"]')
-      this.descriptionHandler = handlers
-    if (selector === 'head') this.headHandler = handlers
+  on(selector: string, handlers: { element: (el: TestElement) => void }) {
+    this.handlers.set(selector, handlers)
     return this
   }
 
   transform(response: Response) {
     return (async () => {
       let html = await response.text()
-      if (this.titleHandler) {
+      const openGraphHandler = this.handlers.get('meta[property]')
+      if (openGraphHandler) {
+        html = html.replace(
+          /<meta\s+property="(og:[^"]+)"[^>]*\/?\s*>/g,
+          (tag, property: string) => {
+            let removed = false
+            openGraphHandler.element({
+              getAttribute: (name) => (name === 'property' ? property : null),
+              remove: () => {
+                removed = true
+              },
+            })
+            return removed ? '' : tag
+          },
+        )
+      }
+      for (const selector of [
+        'meta[name="twitter:card"]',
+        'link[rel="canonical"]',
+      ]) {
+        const handler = this.handlers.get(selector)
+        if (handler) {
+          const expression =
+            selector === 'meta[name="twitter:card"]'
+              ? /<meta\s+name="twitter:card"[^>]*\/?\s*>/g
+              : /<link\s+rel="canonical"[^>]*\/?\s*>/g
+          html = html.replace(expression, (tag) => {
+            let removed = false
+            handler.element({
+              remove: () => {
+                removed = true
+              },
+            })
+            return removed ? '' : tag
+          })
+        }
+      }
+      const titleHandler = this.handlers.get('title')
+      if (titleHandler) {
         let titleText = ''
-        this.titleHandler.element({
+        titleHandler.element({
           setInnerContent(value: string) {
             titleText = escapeHtml(value)
           },
@@ -44,9 +75,10 @@ class FakeHTMLRewriter {
           `<title>${titleText}</title>`,
         )
       }
-      if (this.descriptionHandler) {
+      const descriptionHandler = this.handlers.get('meta[name="description"]')
+      if (descriptionHandler) {
         let content = ''
-        this.descriptionHandler.element({
+        descriptionHandler.element({
           setAttribute(name: string, value: string) {
             // HTMLRewriter escapes attribute values, so callers pass raw text.
             if (name === 'content') content = escapeHtml(value)
@@ -57,9 +89,10 @@ class FakeHTMLRewriter {
           `<meta name="description" content="${content}" />`,
         )
       }
-      if (this.headHandler) {
+      const headHandler = this.handlers.get('head')
+      if (headHandler) {
         let appended = ''
-        this.headHandler.element({
+        headHandler.element({
           append(value: string) {
             appended += value
           },
@@ -178,6 +211,28 @@ describe('worker fetch handler', () => {
     }
   })
 
+  it('serves complete homepage social metadata in the initial HTML response', async () => {
+    const response = await handle('/', envWith(files))
+    const html = await response.text()
+
+    expect(response.status).toBe(200)
+    expect(html).toContain('name="description"')
+    expect(html).toContain('property="og:type" content="website"')
+    expect(html).toContain(
+      'property="og:title" content="FlickPick · Movies and TV"',
+    )
+    expect(html).toContain('property="og:description"')
+    expect(html).toContain(
+      'property="og:image" content="https://flickpick.mel-2cb.workers.dev/flickpick-social.png"',
+    )
+    expect(html).toContain('property="og:image:width" content="1280"')
+    expect(html).toContain('property="og:image:height" content="640"')
+    expect(html).toContain(
+      'property="og:url" content="https://flickpick.mel-2cb.workers.dev/"',
+    )
+    expect(html).toContain('name="twitter:card" content="summary_large_image"')
+  })
+
   it('returns 404 shell for unknown and non-numeric movie paths', async () => {
     const env = envWith(files)
 
@@ -232,6 +287,14 @@ describe('worker fetch handler', () => {
       'name="description" content="A &lt;teacher&gt; cooks."',
     )
     expect(html).toContain('property="og:type" content="video.tv_show"')
+    expect(html.match(/property="og:title"/g)).toHaveLength(1)
+    expect(html).toContain(
+      'property="og:title" content="Breaking Bad &amp; Co · FlickPick"',
+    )
+    expect(html.match(/property="og:description"/g)).toHaveLength(1)
+    expect(html.match(/property="og:image"/g)).toHaveLength(1)
+    expect(html).toContain('https://image.tmdb.org/t/p/w780/bb.jpg')
+    expect(html.match(/property="og:url"/g)).toHaveLength(1)
     expect(html).toContain('https://flickpick.mel-2cb.workers.dev/tv/1396')
     expect(fetchMock).toHaveBeenCalled()
   })
@@ -260,7 +323,14 @@ describe('worker fetch handler', () => {
     )
     expect(html.match(/name="description"/g)).toHaveLength(1)
     expect(html).toContain('property="og:type" content="video.movie"')
-    expect(html).toContain('property="og:title"')
+    expect(html.match(/property="og:title"/g)).toHaveLength(1)
+    expect(html).toContain(
+      'property="og:title" content="The Matrix &amp; Co · FlickPick"',
+    )
+    expect(html.match(/property="og:description"/g)).toHaveLength(1)
+    expect(html.match(/property="og:image"/g)).toHaveLength(1)
+    expect(html).toContain('https://image.tmdb.org/t/p/w780/matrix.jpg')
+    expect(html.match(/property="og:url"/g)).toHaveLength(1)
     expect(html).toContain('rel="canonical"')
     expect(html).toContain('https://flickpick.mel-2cb.workers.dev/movies/603')
     expect(response.headers.get('ETag')).toBeNull()
@@ -279,7 +349,9 @@ describe('worker fetch handler', () => {
 
     expect(response.status).toBe(200)
     expect(html).toContain('<title>FlickPick</title>')
-    expect(html).not.toContain('property="og:title"')
+    expect(html).toContain(
+      'property="og:title" content="FlickPick · Movies and TV"',
+    )
   })
 
   it('returns 404 with the SPA shell when the movie API responds 404', async () => {
@@ -297,7 +369,9 @@ describe('worker fetch handler', () => {
     expect(response.headers.get('Last-Modified')).toBeNull()
     expect(html).toContain('id="root"')
     expect(html).toContain('<title>FlickPick</title>')
-    expect(html).not.toContain('property="og:title"')
+    expect(html).toContain(
+      'property="og:title" content="FlickPick · Movies and TV"',
+    )
   })
 
   it('falls back to the plain shell when the movie API fetch hangs past timeout', async () => {
@@ -320,7 +394,9 @@ describe('worker fetch handler', () => {
 
     expect(response.status).toBe(200)
     expect(html).toContain('<title>FlickPick</title>')
-    expect(html).not.toContain('property="og:title"')
+    expect(html).toContain(
+      'property="og:title" content="FlickPick · Movies and TV"',
+    )
   })
 
   it('strips conditional request headers so rewritten movie pages are not 304', async () => {
