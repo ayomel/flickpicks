@@ -59,9 +59,10 @@ describe('MobileTabBar', () => {
     await user.click(screen.getByRole('button', { name: 'Search' }))
 
     expect(
-      screen.getByRole('dialog', { name: 'Search movies' }),
+      screen.getByRole('dialog', { name: 'Search movies & TV' }),
     ).toBeInTheDocument()
     expect(screen.getByRole('combobox')).toBeVisible()
+    expect(screen.getByRole('combobox')).toHaveFocus()
   })
 
   it('returns focus to Search when Escape closes the panel', async () => {
@@ -71,13 +72,13 @@ describe('MobileTabBar', () => {
     const searchTab = screen.getByRole('button', { name: 'Search' })
     await user.click(searchTab)
     expect(
-      screen.getByRole('dialog', { name: 'Search movies' }),
+      screen.getByRole('dialog', { name: 'Search movies & TV' }),
     ).toBeInTheDocument()
 
     await user.keyboard('{Escape}')
 
     expect(
-      screen.queryByRole('dialog', { name: 'Search movies' }),
+      screen.queryByRole('dialog', { name: 'Search movies & TV' }),
     ).not.toBeInTheDocument()
     expect(searchTab).toHaveFocus()
   })
@@ -89,14 +90,14 @@ describe('MobileTabBar', () => {
     const searchTab = screen.getByRole('button', { name: 'Search' })
     await user.click(searchTab)
     expect(
-      screen.getByRole('dialog', { name: 'Search movies' }),
+      screen.getByRole('dialog', { name: 'Search movies & TV' }),
     ).toBeInTheDocument()
 
     const outside = screen.getByRole('button', { name: 'Outside' })
     await user.click(outside)
 
     expect(
-      screen.queryByRole('dialog', { name: 'Search movies' }),
+      screen.queryByRole('dialog', { name: 'Search movies & TV' }),
     ).not.toBeInTheDocument()
     expect(searchTab).not.toHaveFocus()
     expect(outside).toHaveFocus()
@@ -108,14 +109,28 @@ describe('MobileTabBar', () => {
 
     await user.click(screen.getByRole('button', { name: 'Search' }))
     expect(
-      screen.getByRole('dialog', { name: 'Search movies' }),
+      screen.getByRole('dialog', { name: 'Search movies & TV' }),
     ).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Add to watchlist' }))
 
     expect(
-      screen.queryByRole('dialog', { name: 'Search movies' }),
+      screen.queryByRole('dialog', { name: 'Search movies & TV' }),
     ).not.toBeInTheDocument()
+  })
+
+  it('closes from the panel and restores focus to the Search tab', async () => {
+    const user = userEvent.setup()
+    renderBar()
+
+    const searchTab = screen.getByRole('button', { name: 'Search' })
+    await user.click(searchTab)
+    await user.click(screen.getByRole('button', { name: 'Close search' }))
+
+    expect(
+      screen.queryByRole('dialog', { name: 'Search movies & TV' }),
+    ).not.toBeInTheDocument()
+    expect(searchTab).toHaveFocus()
   })
 
   it('marks Home as the current page on /', () => {

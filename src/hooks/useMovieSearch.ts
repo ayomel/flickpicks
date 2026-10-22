@@ -15,13 +15,12 @@ import {
 } from '@/hooks/useSearchQuery'
 import { getSearchResultKey, getSearchResultPath } from '@/utils/searchResult'
 
-const LISTBOX_ID = 'movie-search-listbox'
-
 export const useMovieSearch = () => {
   const navigate = useNavigate()
   const rootRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const instanceId = useId()
+  const listboxId = `movie-search-listbox-${instanceId}`
 
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
@@ -118,7 +117,7 @@ export const useMovieSearch = () => {
     isError,
     isExpanded,
     isLoading,
-    listboxId: LISTBOX_ID,
+    listboxId,
     query,
     results,
     rootRef,
