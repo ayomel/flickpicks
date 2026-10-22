@@ -1,5 +1,6 @@
 import { useQueries, useQuery } from '@tanstack/react-query'
 import { apiClient } from '../../services/apiClient'
+import { getVisitorId } from '../../services/visitorId'
 import type { MovieDetails } from '@/types/movieDetails'
 import type { TvDetails } from '@/types/tvDetails'
 import type {
@@ -7,7 +8,7 @@ import type {
   WatchlistMediaType,
 } from '@/types/watchlist'
 
-export const watchlistQueryKey = ['watchlist'] as const
+export const watchlistQueryKey = ['watchlist', getVisitorId()] as const
 
 export const useWatchlistQuery = () => {
   return useQuery({

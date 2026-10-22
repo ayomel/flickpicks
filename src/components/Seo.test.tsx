@@ -91,7 +91,7 @@ describe('Seo', () => {
     rerender(
       <Seo
         title="FlickPick"
-        description="Browse trending movies, coming soon titles, and a shared watchlist."
+        description="Browse trending movies, coming soon titles, and your anonymous browser watchlist."
         canonical={`${SITE_ORIGIN}/`}
         ogType="website"
         shareable

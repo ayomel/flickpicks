@@ -1,12 +1,12 @@
 # FlickPick
 
-FlickPick helps you discover movies and TV shows. Browse trending titles, search both, view details and trailers, and save everything to one watchlist.
+FlickPick helps you discover movies and TV shows. Browse trending titles, search both, view details and trailers, and save titles to an anonymous watchlist for this browser.
 
 **Try it:** [Live app](https://flickpick.mel-2cb.workers.dev/) · [API docs](https://flickpicks.fastapicloud.dev/docs)
 
 ## Product tour
 
-Search shows movies and TV together. Each result is labeled by type and opens its matching detail page, with title information, trailers, and watch options where available. Save movies and shows to the same watchlist and return to them from the home page.
+Search shows movies and TV together. Each result is labeled by type and opens its matching detail page, with title information, trailers, and watch options where available. Save movies and shows to this browser's watchlist and return to them from the home page.
 
 ### Browse and search
 
@@ -22,7 +22,7 @@ Search shows movies and TV together. Each result is labeled by type and opens it
 
 ## Architecture
 
-The React single-page app runs in the browser and is served by a Cloudflare Worker. It calls the FastAPI service using `VITE_API_URL`, and that service gets catalog data from TMDB. Cloudflare's dashboard Git integration deploys the frontend Worker from this repository.
+The React single-page app runs in the browser and is served by a Cloudflare Worker. It calls the FastAPI service using `VITE_API_URL`, and that service gets catalog data from TMDB. For watchlist requests, the browser stores an anonymous UUID in local storage and sends it as `X-Visitor-ID`; the API scopes reads and writes to that ID. There are no accounts or authentication, and clearing browser data loses access to that browser's list. Cloudflare's dashboard Git integration deploys the frontend Worker from this repository.
 
 ```mermaid
 flowchart LR

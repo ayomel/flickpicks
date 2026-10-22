@@ -37,7 +37,7 @@ export const Home = () => {
     <div className="min-h-svh bg-background">
       <Seo
         title="FlickPick"
-        description="Browse trending movies, coming soon titles, and a shared watchlist."
+        description="Browse trending movies, coming soon titles, and your anonymous browser watchlist."
         canonical={absoluteUrl('/')}
         ogType="website"
         shareable
