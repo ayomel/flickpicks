@@ -22,7 +22,7 @@ export const WatchlistReviewDialog = ({
       <Button
         variant="secondary"
         size="sm"
-        className="mt-2 w-full"
+        className="mt-2 w-fit max-w-full"
         onPress={() => setIsOpen(true)}
       >
         {entry.rating !== null ? (
