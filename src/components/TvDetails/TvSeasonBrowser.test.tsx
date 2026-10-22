@@ -33,13 +33,17 @@ const seasons: TvSeasonSummary[] = [
   },
 ]
 
-const renderBrowser = () => {
+const renderBrowser = (watchBaseUrl = 'https://7movies.ac') => {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
   const view = render(
     <QueryClientProvider client={client}>
-      <TvSeasonBrowser showId={1396} seasons={seasons} />
+      <TvSeasonBrowser
+        showId={1396}
+        seasons={seasons}
+        watchBaseUrl={watchBaseUrl}
+      />
     </QueryClientProvider>,
   )
   return { ...view, client }
@@ -88,6 +92,15 @@ describe('TvSeasonBrowser', () => {
             overview: 'A chemistry teacher receives difficult news.',
             season_number: 1,
           },
+          {
+            id: 2,
+            episode_number: 2,
+            name: 'Episode 2',
+            air_date: null,
+            runtime: null,
+            overview: '',
+            season_number: 1,
+          },
         ],
       },
     })
@@ -99,7 +112,24 @@ describe('TvSeasonBrowser', () => {
     expect(
       screen.getByText('A chemistry teacher receives difficult news.'),
     ).toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: /play/i })).not.toBeInTheDocument()
+    const episodeOneLink = screen.getByRole('link', {
+      name: 'Play episode 1 (opens in a new tab)',
+    })
+    expect(episodeOneLink).toHaveAttribute(
+      'href',
+      'https://7movies.ac/tv/1396/watch?episode=1&open=tv-1396&season=1&watch=1',
+    )
+    expect(episodeOneLink).toHaveAttribute('target', '_blank')
+    expect(episodeOneLink).toHaveAttribute('rel', 'noopener noreferrer')
+    expect(screen.getAllByText('Episode 2')).toHaveLength(1)
+    expect(
+      screen.getByRole('link', {
+        name: 'Play episode 2 (opens in a new tab)',
+      }),
+    ).toHaveAttribute(
+      'href',
+      'https://7movies.ac/tv/1396/watch?episode=2&open=tv-1396&season=1&watch=1',
+    )
     client.clear()
   })
 
