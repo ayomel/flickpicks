@@ -115,6 +115,7 @@ describe('TvSeasonBrowser', () => {
     const episodeOneLink = screen.getByRole('link', {
       name: 'Play episode 1 (opens in a new tab)',
     })
+    expect(episodeOneLink.querySelectorAll('svg')).toHaveLength(1)
     expect(episodeOneLink).toHaveAttribute(
       'href',
       'https://7movies.ac/tv/1396/watch?episode=1&open=tv-1396&season=1&watch=1',
