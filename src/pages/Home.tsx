@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom'
 import FeatureMovieHero from '../components/FeatureMovieHero/FeatureMovieHero'
 import { ComingSoonRow } from '@/components/Row/ComingSoonRow'
 import { TrendingRows } from '@/components/Row/TrendingRows'
+import { BecauseYouRatedRow } from '@/components/Row/BecauseYouRatedRow'
 import { WatchlistRow } from '@/components/Watchlist/WatchlistRow'
 import { MovieNightPicker } from '@/components/Watchlist/MovieNightPicker'
 import { Seo } from '@/components/Seo'
@@ -15,7 +16,7 @@ export const Home = () => {
   const location = useLocation()
   const trendingQuery = useTrendingQuery()
   const upcomingQuery = useUpcomingQuery()
-  const { isLoadingTitles, titles } = useWatchlistTitles()
+  const { entriesQuery, isLoadingTitles, titles } = useWatchlistTitles()
 
   const rowsSettled =
     !trendingQuery.isLoading && !upcomingQuery.isLoading && !isLoadingTitles
@@ -48,6 +49,7 @@ export const Home = () => {
         <div id="browse">
           <TrendingRows />
         </div>
+        <BecauseYouRatedRow entries={entriesQuery.data ?? []} titles={titles} />
         <ComingSoonRow />
         <div id="watchlist" className="scroll-mt-20">
           <MovieNightPicker />

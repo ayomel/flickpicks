@@ -22,6 +22,7 @@ type PosterCardProps = {
   tabIndex?: number
   onFocus?: FocusEventHandler<HTMLAnchorElement>
   eager?: boolean
+  showMediaType?: boolean
 }
 
 const POSTER_WIDTH = 342
@@ -32,6 +33,7 @@ export const PosterCard = ({
   tabIndex,
   onFocus,
   eager = false,
+  showMediaType = false,
 }: PosterCardProps) => {
   const [imageFailed, setImageFailed] = useState(false)
   const year = movie.release_date ? formatReleaseYear(movie.release_date) : null
@@ -79,6 +81,11 @@ export const PosterCard = ({
       <p className="m-0 mt-2 truncate text-sm font-medium text-foreground">
         {movie.title}
       </p>
+      {showMediaType && movie.media_type ? (
+        <p className="m-0 font-mono text-xs text-muted-foreground">
+          {movie.media_type === 'tv' ? 'TV' : 'Movie'}
+        </p>
+      ) : null}
       {year ? (
         <p className="m-0 font-mono text-xs text-muted-foreground">{year}</p>
       ) : null}
