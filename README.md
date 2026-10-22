@@ -2,7 +2,7 @@
 
 FlickPick helps you discover movies and TV shows. Browse trending titles, search both, view details and trailers, and save titles to an anonymous watchlist for this browser.
 
-**Try it:** [Live app](https://flickpick.mel-2cb.workers.dev/) · [API docs](https://flickpicks.fastapicloud.dev/docs)
+**Try it:** [Live app](https://flickpick.mel-2cb.workers.dev/) · [Frontend repository](https://github.com/ayomel/flickpicks) · [API repository](https://github.com/ayomel/flickpicks-api) · [API docs](https://flickpicks.fastapicloud.dev/docs)
 
 ## Product tour
 
@@ -76,7 +76,7 @@ pnpm deploy:dry
 
 ## Case study
 
-See [docs/portfolio-case-study.md](docs/portfolio-case-study.md) for a hiring-manager-oriented overview of the product and engineering work.
+Read the [published case study on melverton.com](https://melverton.com/projects/flickpick) or the [source Markdown](docs/portfolio-case-study.md). It covers the product and engineering work, with links to the [live app](https://flickpick.mel-2cb.workers.dev/), [frontend repository](https://github.com/ayomel/flickpicks), and [API repository](https://github.com/ayomel/flickpicks-api).
 
 ## Attribution
 
