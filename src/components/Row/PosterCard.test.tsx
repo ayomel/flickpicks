@@ -69,7 +69,40 @@ describe('PosterCard', () => {
     expect(
       screen.queryByRole('img', { name: 'Fight Club poster' }),
     ).not.toBeInTheDocument()
-    expect(document.querySelector('svg')).toBeTruthy()
+    const fallback = screen.getByRole('img', {
+      name: 'Poster artwork unavailable',
+    })
+    expect(fallback.parentElement).toHaveClass('aspect-[2/3]')
+    expect(fallback.parentElement).toHaveClass(
+      'group-hover/card:border-brand/35',
+    )
+    expect(fallback).toHaveTextContent('Poster unavailable')
+    expect(screen.getByText('Fight Club')).toBeInTheDocument()
+    expect(screen.getByText('1999')).toBeInTheDocument()
+    expect(screen.getByText('Movie')).toBeInTheDocument()
+  })
+
+  it('shows a designed title, year, and type fallback when artwork is missing', () => {
+    render(
+      <MemoryRouter>
+        <PosterCard
+          movie={{
+            id: 42,
+            title: 'Test Show',
+            poster_path: null,
+            release_date: '2020-01-01',
+            media_type: 'tv',
+          }}
+        />
+      </MemoryRouter>,
+    )
+
+    expect(
+      screen.getByRole('img', { name: 'Poster artwork unavailable' }),
+    ).toHaveTextContent('Poster unavailable')
+    expect(screen.getByText('Test Show')).toBeInTheDocument()
+    expect(screen.getByText('2020')).toBeInTheDocument()
+    expect(screen.getByText('TV')).toBeInTheDocument()
   })
 
   it('uses a real poster alt text and responsive srcset', () => {

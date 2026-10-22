@@ -26,7 +26,7 @@ export const ComingSoonRow = () => {
   return (
     <MediaRow
       label="Coming soon"
-      title="In theaters near you"
+      title="Upcoming movies"
       variant="backdrop"
       items={movies}
       getKey={(movie) => movie.id}
