@@ -1,12 +1,10 @@
 # FlickPick: full-stack case study
 
-> Draft for a full-stack hiring audience. Technical details are based on the current repository and live application; no usage or business metrics are available.
-
 ## The product
 
 FlickPick is a deployed movie and TV discovery app. A visitor can browse curated catalog rows, search films and series together, open a detail page, watch an available trailer, and save either type of title to an anonymous watchlist scoped to that browser.
 
-**Links:** [Live product](https://flickpick.mel-2cb.workers.dev/) · [API docs](https://flickpicks.fastapicloud.dev/docs)
+**Links:** [Live product](https://flickpick.mel-2cb.workers.dev/) · [Published case study](https://melverton.com/projects/flickpick) · [Frontend repository](https://github.com/ayomel/flickpicks) · [API repository](https://github.com/ayomel/flickpicks-api) · [API docs](https://flickpicks.fastapicloud.dev/docs) · [Project README](../README.md)
 
 ## What I built
 
