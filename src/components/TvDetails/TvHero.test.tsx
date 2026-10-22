@@ -39,5 +39,6 @@ describe('TvHero', () => {
     )
     expect(playLink).toHaveAttribute('target', '_blank')
     expect(playLink).toHaveAttribute('rel', 'noopener noreferrer')
+    expect(playLink.querySelectorAll('svg')).toHaveLength(1)
   })
 })

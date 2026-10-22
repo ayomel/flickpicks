@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ChevronDown, ExternalLink, Play } from 'lucide-react'
+import { ChevronDown, Play } from 'lucide-react'
 import { Button, LinkButton } from '@/components/ui/button'
 import type { TvEpisode, TvSeasonSummary } from '@/types/tvDetails'
 import { formatFirstAirDate } from '@/utils/formatTv'
@@ -122,10 +122,6 @@ const TvSeasonItem = ({ showId, season, watchBaseUrl }: TvSeasonItemProps) => {
                           aria-hidden="true"
                         />
                         Play
-                        <ExternalLink
-                          aria-hidden="true"
-                          data-icon="inline-end"
-                        />
                       </LinkButton>
                     ) : null}
                   </div>

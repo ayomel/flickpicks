@@ -1,4 +1,4 @@
-import { ExternalLink, Play } from 'lucide-react'
+import { Play } from 'lucide-react'
 import { LinkButton } from '@/components/ui/button'
 import { getWatchPageUrl } from '@/utils/getWatchPageUrl'
 
@@ -25,7 +25,6 @@ export const TvWatchLink = ({
     >
       <Play data-icon="inline-start" className="fill-current" />
       Play
-      <ExternalLink aria-hidden="true" data-icon="inline-end" />
     </LinkButton>
   )
 }

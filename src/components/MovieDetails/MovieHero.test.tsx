@@ -60,11 +60,13 @@ describe('MovieHero', () => {
     expect(
       screen.getByRole('button', { name: /play trailer/i }),
     ).toBeInTheDocument()
-    expect(
-      screen.getByRole('link', { name: 'Play (opens in a new tab)' }),
-    ).toHaveAttribute(
+    const playLink = screen.getByRole('link', {
+      name: 'Play (opens in a new tab)',
+    })
+    expect(playLink).toHaveAttribute(
       'href',
       'https://7movies.ac/movie/603/watch',
     )
+    expect(playLink.querySelectorAll('svg')).toHaveLength(1)
   })
 })
