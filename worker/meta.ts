@@ -109,6 +109,23 @@ const injectShellMeta = async (
   tags: string,
 ) => {
   const rewritten = await new HTMLRewriter()
+    .on('meta[property]', {
+      element(element) {
+        if (element.getAttribute('property')?.startsWith('og:')) {
+          element.remove()
+        }
+      },
+    })
+    .on('meta[name="twitter:card"]', {
+      element(element) {
+        element.remove()
+      },
+    })
+    .on('link[rel="canonical"]', {
+      element(element) {
+        element.remove()
+      },
+    })
     .on('title', {
       element(element) {
         element.setInnerContent(title)
