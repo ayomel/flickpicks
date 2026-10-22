@@ -48,7 +48,7 @@ describe('ComingSoonRow', () => {
 
     renderRow()
     expect(
-      screen.getByRole('heading', { name: 'In theaters near you' }),
+      screen.getByRole('heading', { name: 'Upcoming movies' }),
     ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /the mongoose/i })).toHaveAttribute(
       'href',

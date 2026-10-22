@@ -1,5 +1,3 @@
-import type { TrendingMovie } from '@/types/trending'
-
 const TMDB_MOVIE_GENRES: Record<number, string> = {
   28: 'Action',
   12: 'Adventure',
@@ -26,24 +24,24 @@ export const MIN_GENRE_ROW_COUNT = 4
 
 export type GenreRowConfig = {
   id: string
-  label: string
   title: string
-  genreIds: number[]
+  movieGenreIds: number[]
+  tvGenreIds: number[]
 }
 
-/** Genre rows built from the trending list (hide when thinner than MIN_GENRE_ROW_COUNT). */
+/** Genre rows use the separate movie and TV genre taxonomies exposed by TMDB. */
 export const TRENDING_GENRE_ROWS: GenreRowConfig[] = [
   {
     id: 'horror-thriller',
-    label: 'Genre',
-    title: 'Horror & Thriller',
-    genreIds: [27, 53],
+    title: 'Horror, Thriller & Mystery',
+    movieGenreIds: [27, 53],
+    tvGenreIds: [9648],
   },
   {
     id: 'action-adventure',
-    label: 'Genre',
     title: 'Action & Adventure',
-    genreIds: [28, 12],
+    movieGenreIds: [28, 12],
+    tvGenreIds: [10759],
   },
 ]
 
@@ -96,13 +94,4 @@ export const formatSearchGenreLabels = (
     .slice(0, limit)
 
   return names.join(' · ')
-}
-
-export const moviesForGenreRow = (
-  movies: TrendingMovie[],
-  genreIds: number[],
-) => {
-  return movies.filter((movie) =>
-    movie.genre_ids.some((id) => genreIds.includes(id)),
-  )
 }

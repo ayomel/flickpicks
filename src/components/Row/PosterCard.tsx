@@ -3,22 +3,15 @@ import { Film } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { formatReleaseYear } from '@/utils/formatMovie'
+import type { PosterCardMedia } from '@/types/posterCard'
 import {
   getPosterCardPath,
   getPosterSrcSet,
   POSTER_SIZES_CARD,
 } from '@/utils/getPosterPath'
 
-export type PosterCardMovie = {
-  id: number
-  title: string
-  poster_path: string | null
-  release_date?: string
-  media_type?: string
-}
-
 type PosterCardProps = {
-  movie: PosterCardMovie
+  movie: PosterCardMedia
   tabIndex?: number
   onFocus?: FocusEventHandler<HTMLAnchorElement>
   eager?: boolean
@@ -39,6 +32,7 @@ export const PosterCard = ({
   const year = movie.release_date ? formatReleaseYear(movie.release_date) : null
   const posterPath = movie.poster_path
   const showImage = Boolean(posterPath) && !imageFailed
+  const mediaTypeLabel = movie.media_type === 'tv' ? 'TV' : 'Movie'
 
   return (
     <Link
@@ -73,17 +67,24 @@ export const PosterCard = ({
             )}
           />
         ) : (
-          <div className="flex size-full items-center justify-center bg-muted">
-            <Film className="size-8 text-muted-foreground" aria-hidden />
+          <div
+            role="img"
+            aria-label="Poster artwork unavailable"
+            className="flex size-full flex-col justify-between bg-gradient-to-br from-muted via-card to-muted p-3 text-left"
+          >
+            <Film className="size-7 text-muted-foreground/80" aria-hidden />
+            <p className="m-0 text-xs font-medium text-muted-foreground">
+              Poster unavailable
+            </p>
           </div>
         )}
       </div>
       <p className="m-0 mt-2 truncate text-sm font-medium text-foreground">
         {movie.title}
       </p>
-      {showMediaType && movie.media_type ? (
+      {showMediaType || !showImage ? (
         <p className="m-0 font-mono text-xs text-muted-foreground">
-          {movie.media_type === 'tv' ? 'TV' : 'Movie'}
+          {mediaTypeLabel}
         </p>
       ) : null}
       {year ? (

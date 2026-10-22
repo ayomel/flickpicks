@@ -1,14 +1,11 @@
 import { MediaRow, type MediaRowItemOptions } from '@/components/Row/MediaRow'
 import { PosterCard } from '@/components/Row/PosterCard'
+import { useGenreDiscoveryQueries } from '@/hooks/useGenreDiscoveryQueries'
 import { useTrendingQuery } from '@/hooks/useTrendingQuery'
-import type { TrendingMovie } from '@/types/trending'
-import {
-  MIN_GENRE_ROW_COUNT,
-  moviesForGenreRow,
-  TRENDING_GENRE_ROWS,
-} from '@/utils/tmdbGenres'
+import type { PosterCardMedia } from '@/types/posterCard'
+import { MIN_GENRE_ROW_COUNT } from '@/utils/tmdbGenres'
 
-const renderPoster = (movie: TrendingMovie, options: MediaRowItemOptions) => (
+const renderPoster = (movie: PosterCardMedia, options: MediaRowItemOptions) => (
   <PosterCard
     movie={movie}
     tabIndex={options.tabIndex}
@@ -19,6 +16,7 @@ const renderPoster = (movie: TrendingMovie, options: MediaRowItemOptions) => (
 
 export const TrendingRows = () => {
   const { data, isLoading, isError } = useTrendingQuery()
+  const genreRows = useGenreDiscoveryQueries()
   const movies = data?.results ?? []
 
   return (
@@ -37,23 +35,30 @@ export const TrendingRows = () => {
         renderItem={renderPoster}
       />
 
-      {!isLoading && !isError
-        ? TRENDING_GENRE_ROWS.map((row) => {
-            const rowMovies = moviesForGenreRow(movies, row.genreIds)
-            if (rowMovies.length < MIN_GENRE_ROW_COUNT) return null
+      {genreRows.map((row) => {
+        if (
+          !row.isLoading &&
+          !row.isError &&
+          row.items.length < MIN_GENRE_ROW_COUNT
+        ) {
+          return null
+        }
 
-            return (
-              <MediaRow
-                key={row.id}
-                label={row.label}
-                title={row.title}
-                items={rowMovies}
-                getKey={(movie) => `${row.id}-${movie.id}`}
-                renderItem={renderPoster}
-              />
-            )
-          })
-        : null}
+        return (
+          <MediaRow
+            key={row.id}
+            label="Genre"
+            title={row.title}
+            items={row.items}
+            getKey={(movie) => `${row.id}-${movie.media_type}-${movie.id}`}
+            isLoading={row.isLoading}
+            isError={row.isError}
+            emptyMessage="No titles in this genre right now."
+            errorMessage="Couldn't load this genre row."
+            renderItem={renderPoster}
+          />
+        )
+      })}
     </>
   )
 }

@@ -1,9 +1,10 @@
 import { useQueries } from '@tanstack/react-query'
 import { MediaRow, type MediaRowItemOptions } from '@/components/Row/MediaRow'
-import { PosterCard, type PosterCardMovie } from '@/components/Row/PosterCard'
+import { PosterCard } from '@/components/Row/PosterCard'
 import { apiClient } from '../../../services/apiClient'
 import type { WatchlistTitle } from '@/hooks/useWatchlistQuery'
 import type { WatchlistEntryRead, WatchlistMediaType } from '@/types/watchlist'
+import type { PosterCardMedia } from '@/types/posterCard'
 
 export const HIGH_RATING_THRESHOLD = 8
 
@@ -67,7 +68,7 @@ const makeSeeds = (
     .sort((left, right) => right.rating - left.rating)
 }
 
-const posterCardMovie = (item: RecommendationMedia): PosterCardMovie | null => {
+const posterCardMovie = (item: RecommendationMedia): PosterCardMedia | null => {
   if (item.media_type === 'tv') {
     if (!item.name) return null
     return {
