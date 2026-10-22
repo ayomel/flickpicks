@@ -93,7 +93,13 @@ export const WatchlistRow = () => {
     )
   }
 
-  if (titlesWithEntries.length === 0) return null
+  if (titlesWithEntries.length === 0) {
+    return (
+      <p className="px-4 py-6 font-mono text-sm text-muted-foreground sm:px-6">
+        Nothing saved yet — browse trending and add your first title
+      </p>
+    )
+  }
 
   return (
     <>

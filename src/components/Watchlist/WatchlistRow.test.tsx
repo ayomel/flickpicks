@@ -162,7 +162,7 @@ describe('WatchlistRow', () => {
     client.clear()
   })
 
-  it('hides a section with no titles and hides both sections when the watchlist is empty', () => {
+  it('hides empty sections and explains how to save the first title', () => {
     const oneSavedTitle = {
       ...watchlistData,
       titles: [watchlistData.titles[1]],
@@ -199,10 +199,17 @@ describe('WatchlistRow', () => {
       </QueryClientProvider>,
     )
 
-    expect(screen.queryByRole('heading', { name: 'Saved to watch' })).toBeNull()
+    expect(
+      screen.queryByRole('heading', { name: 'Saved to watch' }),
+    ).not.toBeInTheDocument()
     expect(
       screen.queryByRole('heading', { name: 'Already watched' }),
-    ).toBeNull()
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Nothing saved yet — browse trending and add your first title',
+      ),
+    ).toBeVisible()
     client.clear()
   })
 
