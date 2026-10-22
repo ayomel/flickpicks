@@ -1,9 +1,11 @@
 import { MediaRow } from '@/components/Row/MediaRow'
 import { PosterCard } from '@/components/Row/PosterCard'
 import { useWatchlistTitles } from '@/hooks/useWatchlistQuery'
+import { WatchlistReviewDialog } from './WatchlistReviewDialog'
 
 export const WatchlistRow = () => {
-  const { titles, isLoadingTitles, isError, entriesQuery } = useWatchlistTitles()
+  const { titles, isLoadingTitles, isError, entriesQuery } =
+    useWatchlistTitles()
 
   if (!isLoadingTitles && titles.length === 0) {
     return null
@@ -25,14 +27,27 @@ export const WatchlistRow = () => {
           </p>
         ) : null
       }
-      renderItem={(title, { tabIndex, onFocus, eager }) => (
-        <PosterCard
-          movie={title}
-          tabIndex={tabIndex}
-          onFocus={onFocus}
-          eager={eager}
-        />
-      )}
+      renderItem={(title, { tabIndex, onFocus, eager }) => {
+        const entry = entriesQuery.data?.find(
+          (candidate) =>
+            candidate.tmdb_id === title.id &&
+            candidate.media_type === title.media_type,
+        )
+
+        return (
+          <div className="w-36 shrink-0 sm:w-40">
+            <PosterCard
+              movie={title}
+              tabIndex={tabIndex}
+              onFocus={onFocus}
+              eager={eager}
+            />
+            {entry ? (
+              <WatchlistReviewDialog entry={entry} title={title.title} />
+            ) : null}
+          </div>
+        )
+      }}
     />
   )
 }
