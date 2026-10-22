@@ -12,6 +12,7 @@ import { MovieDetailsError } from '@/components/MovieDetails/MovieDetailsError'
 import { Seo } from '@/components/Seo'
 import { isNumericMovieId } from '@/utils/isNumericMovieId'
 import { absoluteUrl, mediaOgImageUrl } from '@/utils/seo'
+import { WatchlistReviewSection } from '@/components/Watchlist/WatchlistReviewSection'
 
 export const TvDetails = () => {
   const { id } = useParams()
@@ -70,6 +71,13 @@ export const TvDetails = () => {
           </div>
 
           <TvDetailsInfo show={data} />
+        </div>
+        <div className="mx-auto mt-8 w-full max-w-6xl">
+          <WatchlistReviewSection
+            tmdbId={data.id}
+            mediaType="tv"
+            title={data.name}
+          />
         </div>
       </div>
     </div>

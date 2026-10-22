@@ -14,6 +14,7 @@ import { isNumericMovieId } from '@/utils/isNumericMovieId'
 import { absoluteUrl, movieOgImageUrl } from '@/utils/seo'
 import { detailPageShell } from '@/components/MovieDetails/detailPageLayout'
 import { cn } from '@/lib/utils'
+import { WatchlistReviewSection } from '@/components/Watchlist/WatchlistReviewSection'
 
 export const MovieDetails = () => {
   const { id } = useParams()
@@ -61,6 +62,13 @@ export const MovieDetails = () => {
           </div>
 
           <MovieDetailsInfo movie={data} />
+        </div>
+        <div className="mt-8">
+          <WatchlistReviewSection
+            tmdbId={data.id}
+            mediaType="movie"
+            title={data.title}
+          />
         </div>
       </div>
 

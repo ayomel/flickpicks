@@ -1,7 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter } from 'react-router-dom'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { WatchlistRow } from './WatchlistRow'
 
 vi.mock('@/hooks/useWatchlistQuery', () => ({
@@ -24,9 +24,36 @@ vi.mock('@/hooks/useWatchlistQuery', () => ({
     ],
     isLoadingTitles: false,
     isError: false,
-    entriesQuery: { data: [{ id: 1, tmdb_id: 1 }] },
+    entriesQuery: {
+      data: [
+        {
+          id: 1,
+          tmdb_id: 42,
+          media_type: 'movie',
+          status: 'watched',
+          rating: 8,
+          review: 'A good one.',
+          added_by: '',
+          created_at: '',
+          updated_at: '',
+        },
+        {
+          id: 2,
+          tmdb_id: 42,
+          media_type: 'tv',
+          status: 'want',
+          rating: null,
+          review: '',
+          added_by: '',
+          created_at: '',
+          updated_at: '',
+        },
+      ],
+    },
   }),
 }))
+
+afterEach(() => cleanup())
 
 describe('WatchlistRow', () => {
   beforeEach(() => {
@@ -53,5 +80,33 @@ describe('WatchlistRow', () => {
       'href',
       '/tv/42',
     )
+    expect(
+      screen.getByRole('button', { name: /8\/10 · edit review/i }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /mark watched · review/i }),
+    ).toBeInTheDocument()
+  })
+
+  it('opens the selected title review from its watchlist card', async () => {
+    const client = new QueryClient()
+    render(
+      <QueryClientProvider client={client}>
+        <MemoryRouter>
+          <WatchlistRow />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /8\/10 · edit review/i }),
+    )
+    expect(
+      await screen.findByRole('dialog', { name: 'Your review for Test Movie' }),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Your review' })).toHaveValue(
+      'A good one.',
+    )
+    client.clear()
   })
 })

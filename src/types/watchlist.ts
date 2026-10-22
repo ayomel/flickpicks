@@ -24,3 +24,9 @@ export type WatchlistEntryRead = {
   created_at: string
   updated_at: string
 }
+
+export type WatchlistEntryUpdate = {
+  status?: WatchlistStatus
+  rating?: number | null
+  review?: string
+}
