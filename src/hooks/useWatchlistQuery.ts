@@ -1,12 +1,14 @@
 import { useQueries, useQuery } from '@tanstack/react-query'
 import { apiClient } from '../../services/apiClient'
 import { getVisitorId } from '../../services/visitorId'
-import type { MovieDetails } from '@/types/movieDetails'
-import type { TvDetails } from '@/types/tvDetails'
 import type {
-  WatchlistEntryRead,
-  WatchlistMediaType,
-} from '@/types/watchlist'
+  MovieDetails,
+  MovieVideos,
+  StreamingProviders,
+} from '@/types/movieDetails'
+import type { MovieGenre } from '@/types/search'
+import type { TvDetails } from '@/types/tvDetails'
+import type { WatchlistEntryRead, WatchlistMediaType } from '@/types/watchlist'
 
 export const watchlistQueryKey = ['watchlist', getVisitorId()] as const
 
@@ -41,8 +43,15 @@ export type WatchlistTitle = {
   id: number
   title: string
   poster_path: string | null
+  backdrop_path?: string | null
   release_date: string
   media_type: WatchlistMediaType
+  runtime?: number
+  episode_run_time?: number[]
+  genres?: MovieGenre[]
+  streaming_providers?: StreamingProviders
+  trailer?: string | null
+  videos?: MovieVideos
 }
 
 const uniqueOrderedEntries = (entries: WatchlistEntryRead[]) => {
@@ -72,8 +81,14 @@ export const useWatchlistTitles = () => {
               id: data.id,
               title: data.name,
               poster_path: data.poster_path,
+              backdrop_path: data.backdrop_path,
               release_date: data.first_air_date,
               media_type: mediaType,
+              episode_run_time: data.episode_run_time,
+              genres: data.genres,
+              streaming_providers: data.streaming_providers,
+              trailer: data.trailer,
+              videos: data.videos,
             }
           }
 
@@ -82,8 +97,14 @@ export const useWatchlistTitles = () => {
             id: data.id,
             title: data.title,
             poster_path: data.poster_path,
+            backdrop_path: data.backdrop_path,
             release_date: data.release_date,
             media_type: mediaType,
+            runtime: data.runtime,
+            genres: data.genres,
+            streaming_providers: data.streaming_providers,
+            trailer: data.trailer,
+            videos: data.videos,
           }
         },
       }
@@ -102,6 +123,7 @@ export const useWatchlistTitles = () => {
     entriesQuery,
     titles,
     isLoadingTitles,
-    isError: entriesQuery.isError || titleQueries.some((query) => query.isError),
+    isError:
+      entriesQuery.isError || titleQueries.some((query) => query.isError),
   }
 }
