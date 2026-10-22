@@ -27,14 +27,17 @@ export const WatchlistReviewSection = ({
   return (
     <section
       aria-labelledby="your-review-title"
-      className="rounded-md border border-border bg-card p-5 sm:p-6"
+      className="rounded-lg border border-brand/20 bg-card p-5 shadow-sm shadow-black/10 sm:p-6"
     >
       <div className="mb-4 flex items-center gap-2">
         <Star aria-hidden className="size-4 text-brand" />
         <h2 id="your-review-title" className="text-lg font-semibold">
-          Your review
+          Your movie journal
         </h2>
       </div>
+      <p className="mb-4 mt-0 text-sm text-muted-foreground">
+        A private rating and review, just for you.
+      </p>
 
       {entriesQuery.isLoading ? (
         <p role="status" className="m-0 text-sm text-muted-foreground">

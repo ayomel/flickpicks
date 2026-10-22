@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Check } from 'lucide-react'
+import { ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useUpdateWatchlistEntryMutation } from '@/hooks/useUpdateWatchlistEntryMutation'
 import type { WatchlistEntryRead } from '@/types/watchlist'
@@ -19,6 +20,18 @@ export const WatchlistReviewEditor = ({
   const [review, setReview] = useState(entry.review)
   const [saved, setSaved] = useState(false)
   const mutation = useUpdateWatchlistEntryMutation()
+  const ratingLabel =
+    rating === null
+      ? 'Choose your rating'
+      : rating <= 2
+        ? 'Not for me'
+        : rating <= 4
+          ? 'A miss'
+          : rating <= 6
+            ? 'Worth a watch'
+            : rating <= 8
+              ? 'Loved it'
+              : 'An all-time favorite'
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -70,18 +83,28 @@ export const WatchlistReviewEditor = ({
   }
 
   return (
-    <form className="space-y-5" onSubmit={handleSubmit}>
+    <form className="space-y-6" onSubmit={handleSubmit}>
+      <div className="rounded-md border border-border bg-muted/40 p-4">
+        <p className="m-0 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+          Your private journal
+        </p>
+        <p className="mb-0 mt-1 text-sm font-medium text-foreground">{title}</p>
+        <p className="m-0 mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+          <ShieldCheck aria-hidden className="size-3.5 text-brand" /> Only you
+          can see your rating and review.
+        </p>
+      </div>
       <fieldset className="m-0 min-w-0 border-0 p-0">
         <legend className="mb-2 text-sm font-medium">Your rating</legend>
         <div
           role="radiogroup"
           aria-label="Your rating, from 1 to 10"
-          className="flex flex-wrap gap-2"
+          className="grid grid-cols-5 gap-2 sm:grid-cols-10"
         >
           {Array.from({ length: 10 }, (_, index) => index + 1).map((value) => (
             <label
               key={value}
-              className={`relative flex size-9 cursor-pointer items-center justify-center rounded-md border text-sm font-semibold focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ring ${rating === value ? 'border-brand bg-brand text-primary-foreground' : 'border-border bg-background text-foreground hover:bg-muted'}`}
+              className={`relative flex h-10 cursor-pointer items-center justify-center rounded-md border text-sm font-semibold transition-colors motion-reduce:transition-none focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ring ${rating === value ? 'border-brand bg-brand text-primary-foreground shadow-[0_0_18px_var(--brand-soft)]' : 'border-border bg-background text-foreground hover:border-brand/60 hover:bg-muted'}`}
             >
               <input
                 className="peer sr-only"
@@ -99,6 +122,12 @@ export const WatchlistReviewEditor = ({
             </label>
           ))}
         </div>
+        <p
+          aria-live="polite"
+          className="m-0 mt-2 text-sm font-medium text-brand"
+        >
+          {ratingLabel}
+        </p>
         {rating !== null ? (
           <Button
             type="button"
@@ -126,9 +155,9 @@ export const WatchlistReviewEditor = ({
             setReview(event.target.value)
             setSaved(false)
           }}
-          rows={4}
-          placeholder={`What did you think of ${title}?`}
-          className="w-full resize-y rounded-md border border-border bg-input px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          rows={5}
+          placeholder="What stayed with you after the credits?"
+          className="w-full resize-y rounded-md border border-border bg-input px-3 py-3 text-sm leading-relaxed text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         />
       </div>
 
