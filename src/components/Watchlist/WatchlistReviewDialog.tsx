@@ -9,11 +9,13 @@ import { WatchlistReviewEditor } from './WatchlistReviewEditor'
 type WatchlistReviewDialogProps = {
   entry: WatchlistEntryRead
   title: string
+  posterPath?: string | null
 }
 
 export const WatchlistReviewDialog = ({
   entry,
   title,
+  posterPath,
 }: WatchlistReviewDialogProps) => {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -47,6 +49,7 @@ export const WatchlistReviewDialog = ({
           'fixed inset-0 z-[80] flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm',
           'entering:animate-in entering:fade-in entering:duration-150',
           'exiting:animate-out exiting:fade-out exiting:duration-100',
+          'motion-reduce:animate-none',
         )}
       >
         <Modal className="w-full max-w-lg outline-none">
@@ -78,6 +81,7 @@ export const WatchlistReviewDialog = ({
                   key={entry.id}
                   entry={entry}
                   title={title}
+                  posterPath={posterPath}
                   onClose={close}
                 />
               </div>

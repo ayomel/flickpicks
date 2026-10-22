@@ -6,6 +6,7 @@ import {
   within,
 } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { WatchlistRow } from './WatchlistRow'
@@ -23,14 +24,14 @@ const watchlistData = {
     {
       id: 42,
       title: 'Test Movie',
-      poster_path: null,
+      poster_path: '/movie-poster.jpg',
       release_date: '2024-01-01',
       media_type: 'movie',
     },
     {
       id: 42,
       title: 'Test Show',
-      poster_path: null,
+      poster_path: '/show-poster.jpg',
       release_date: '2020-01-01',
       media_type: 'tv',
     },
@@ -229,12 +230,40 @@ describe('WatchlistRow', () => {
         { name: /8\/10 · edit review/i },
       ),
     )
+    const dialog = await screen.findByRole('dialog', {
+      name: 'Your review for Test Movie',
+    })
     expect(
-      await screen.findByRole('dialog', { name: 'Your review for Test Movie' }),
+      within(dialog).getByRole('img', { name: 'Test Movie poster' }),
     ).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: 'Your review' })).toHaveValue(
       'A good one.',
     )
+    client.clear()
+  })
+
+  it('opens and dismisses the review dialog with the keyboard', async () => {
+    const user = userEvent.setup()
+    const client = new QueryClient()
+    render(
+      <QueryClientProvider client={client}>
+        <MemoryRouter>
+          <WatchlistRow />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    )
+
+    const reviewButton = screen.getByRole('button', {
+      name: /8\/10 · edit review/i,
+    })
+    reviewButton.focus()
+    await user.keyboard('{Enter}')
+    expect(
+      await screen.findByRole('dialog', { name: 'Your review for Test Movie' }),
+    ).toBeInTheDocument()
+
+    await user.keyboard('{Escape}')
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     client.clear()
   })
 })

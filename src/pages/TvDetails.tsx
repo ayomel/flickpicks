@@ -50,6 +50,14 @@ export const TvDetails = () => {
         shareable
       />
       <TvHero show={data} />
+      <div className="mx-auto w-full max-w-6xl px-6 pt-4 sm:px-8 lg:px-10">
+        <WatchlistReviewSection
+          tmdbId={data.id}
+          mediaType="tv"
+          title={data.name}
+          posterPath={data.poster_path}
+        />
+      </div>
 
       <div className="px-6 py-10 sm:px-8 lg:px-10">
         <div className="mx-auto grid w-full max-w-6xl gap-10 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-start xl:grid-cols-[minmax(0,1fr)_18rem]">
@@ -67,13 +75,6 @@ export const TvDetails = () => {
           </div>
 
           <TvDetailsInfo show={data} />
-        </div>
-        <div className="mx-auto mt-8 w-full max-w-6xl">
-          <WatchlistReviewSection
-            tmdbId={data.id}
-            mediaType="tv"
-            title={data.name}
-          />
         </div>
       </div>
     </div>

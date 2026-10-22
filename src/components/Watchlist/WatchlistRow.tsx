@@ -59,7 +59,11 @@ export const WatchlistRow = () => {
               onFocus={onFocus}
               eager={eager}
             />
-            <WatchlistReviewDialog entry={entry} title={itemTitle.title} />
+            <WatchlistReviewDialog
+              entry={entry}
+              title={itemTitle.title}
+              posterPath={itemTitle.poster_path}
+            />
           </div>
         )}
       />

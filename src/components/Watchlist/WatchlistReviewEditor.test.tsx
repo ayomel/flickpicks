@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { apiClient } from '../../../services/apiClient'
 import { WatchlistReviewEditor } from './WatchlistReviewEditor'
@@ -24,13 +24,20 @@ const makeEntry = (
   ...overrides,
 })
 
-const renderEditor = (entry = makeEntry()) => {
+const renderEditor = (
+  entry = makeEntry(),
+  posterPath: string | null = null,
+) => {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
   const result = render(
     <QueryClientProvider client={client}>
-      <WatchlistReviewEditor entry={entry} title="Test title" />
+      <WatchlistReviewEditor
+        entry={entry}
+        title="Test title"
+        posterPath={posterPath}
+      />
     </QueryClientProvider>,
   )
   return { ...result, client }
@@ -55,11 +62,62 @@ describe('WatchlistReviewEditor', () => {
     })
     fireEvent.click(screen.getByRole('button', { name: 'Save review' }))
 
-    expect(await screen.findByRole('status')).toHaveTextContent('Saved')
+    expect(await screen.findByText('Saved')).toBeInTheDocument()
     expect(apiClient.patch).toHaveBeenCalledWith('/entry/8', {
       rating: 9,
       review: 'Still great.',
     })
+    client.clear()
+  })
+
+  it('shows the empty state, title artwork, privacy note, and all ten ratings', () => {
+    renderEditor(makeEntry({ rating: null, review: '' }), '/poster.jpg')
+
+    expect(
+      screen.getByRole('img', { name: 'Test title poster' }),
+    ).toHaveAttribute('src', expect.stringContaining('/poster.jpg'))
+    expect(
+      screen.getByText(/only you can see your rating and review/i),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('status')).toHaveTextContent('No review yet')
+    expect(screen.getAllByRole('radio')).toHaveLength(10)
+    expect(
+      screen.getByRole('radio', { name: '1 out of 10' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('radio', { name: '10 out of 10' }),
+    ).toBeInTheDocument()
+  })
+
+  it('lets a keyboard user move between labeled rating choices', () => {
+    renderEditor(makeEntry({ rating: null, review: '' }))
+    const firstRating = screen.getByRole('radio', { name: '1 out of 10' })
+    const secondRating = screen.getByRole('radio', { name: '2 out of 10' })
+
+    firstRating.focus()
+    fireEvent.keyDown(firstRating, { key: 'ArrowRight' })
+
+    expect(secondRating).toBeChecked()
+    expect(secondRating).toHaveFocus()
+  })
+
+  it('announces that a review is being saved', async () => {
+    let finishRequest = () => {}
+    vi.mocked(apiClient.patch).mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          finishRequest = () => resolve({ data: makeEntry() })
+        }),
+    )
+    const { client } = renderEditor()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save review' }))
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      'Saving your review…',
+    )
+
+    await act(async () => finishRequest())
+    expect(await screen.findByText('Saved')).toBeInTheDocument()
     client.clear()
   })
 

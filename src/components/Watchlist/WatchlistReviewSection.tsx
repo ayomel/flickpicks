@@ -1,7 +1,6 @@
 import { Star } from 'lucide-react'
-import { AddToWatchlistButton } from '@/components/MovieDetails/AddToWatchlistButton'
 import { Button } from '@/components/ui/button'
-import { useUpdateWatchlistEntryMutation } from '@/hooks/useUpdateWatchlistEntryMutation'
+import { useAddToWatchlistMutation } from '@/hooks/useAddToWatchlistMutation'
 import { useWatchlistQuery } from '@/hooks/useWatchlistQuery'
 import type { WatchlistMediaType } from '@/types/watchlist'
 import { WatchlistReviewEditor } from './WatchlistReviewEditor'
@@ -10,19 +9,21 @@ type WatchlistReviewSectionProps = {
   tmdbId: number
   mediaType: WatchlistMediaType
   title: string
+  posterPath?: string | null
 }
 
 export const WatchlistReviewSection = ({
   tmdbId,
   mediaType,
   title,
+  posterPath,
 }: WatchlistReviewSectionProps) => {
   const entriesQuery = useWatchlistQuery()
   const entry = entriesQuery.data?.find(
     (candidate) =>
       candidate.tmdb_id === tmdbId && candidate.media_type === mediaType,
   )
-  const mutation = useUpdateWatchlistEntryMutation()
+  const addMutation = useAddToWatchlistMutation()
 
   return (
     <section
@@ -53,34 +54,27 @@ export const WatchlistReviewSection = ({
             Add this title to your watchlist to mark it watched and leave a
             review.
           </p>
-          <AddToWatchlistButton tmdbId={tmdbId} mediaType={mediaType} />
-        </div>
-      ) : entry.status === 'watched' ? (
-        <WatchlistReviewEditor key={entry.id} entry={entry} title={title} />
-      ) : (
-        <div className="space-y-3">
-          <p className="m-0 text-sm text-muted-foreground">
-            Mark this title as watched before adding a rating or review.
-          </p>
           <Button
             onPress={() =>
-              mutation.mutate({
-                id: entry.id,
-                tmdbId,
-                mediaType,
-                update: { status: 'watched' },
-              })
+              addMutation.mutate({ tmdb_id: tmdbId, media_type: mediaType })
             }
-            isDisabled={mutation.isPending}
+            isDisabled={addMutation.isPending}
           >
-            {mutation.isPending ? 'Marking watched…' : 'Mark as watched'}
+            {addMutation.isPending ? 'Adding…' : 'Add to watchlist'}
           </Button>
-          {mutation.isError ? (
+          {addMutation.isError ? (
             <p role="alert" className="m-0 text-sm text-destructive">
-              Couldn’t update this title. Try again.
+              Couldn’t add this title. Try again.
             </p>
           ) : null}
         </div>
+      ) : (
+        <WatchlistReviewEditor
+          key={entry.id}
+          entry={entry}
+          title={title}
+          posterPath={posterPath}
+        />
       )}
     </section>
   )

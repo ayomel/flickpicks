@@ -54,6 +54,14 @@ export const MovieDetails = () => {
         shareable
       />
       <MovieHero movie={data} />
+      <div className={cn(detailPageShell, 'pt-4')}>
+        <WatchlistReviewSection
+          tmdbId={data.id}
+          mediaType="movie"
+          title={data.title}
+          posterPath={data.poster_path}
+        />
+      </div>
 
       <div className={cn(detailPageShell, 'py-8 lg:py-10')}>
         <div className="grid w-full gap-10 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-start xl:grid-cols-[minmax(0,1fr)_18rem]">
@@ -62,13 +70,6 @@ export const MovieDetails = () => {
           </div>
 
           <MovieDetailsInfo movie={data} />
-        </div>
-        <div className="mt-8">
-          <WatchlistReviewSection
-            tmdbId={data.id}
-            mediaType="movie"
-            title={data.title}
-          />
         </div>
       </div>
 
