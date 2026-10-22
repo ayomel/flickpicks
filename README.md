@@ -1,12 +1,12 @@
 # FlickPick
 
-FlickPick is a movie and TV discovery app. Browse trending titles, search both media types, open detail pages, watch trailers, and keep a mixed watchlist.
+FlickPick helps you discover movies and TV shows. Browse trending titles, search both, view details and trailers, and save everything to one watchlist.
 
 **Try it:** [Live app](https://flickpick.mel-2cb.workers.dev/) · [API docs](https://flickpicks.fastapicloud.dev/docs)
 
 ## Product tour
 
-Search returns movies and TV shows together, with each result labeled by type and routed to the matching detail page. Detail pages bring together title information, trailers, and watch options where available. Add either movies or shows to the shared watchlist and return to them from the home page.
+Search shows movies and TV together. Each result is labeled by type and opens its matching detail page, with title information, trailers, and watch options where available. Save movies and shows to the same watchlist and return to them from the home page.
 
 ### Browse and search
 
@@ -22,7 +22,7 @@ Search returns movies and TV shows together, with each result labeled by type an
 
 ## Architecture
 
-The browser runs the React single-page app served from Cloudflare Workers. It calls the FastAPI service using `VITE_API_URL`; the service integrates with TMDB for catalog data. Cloudflare's dashboard Git integration deploys the frontend Worker from this repository.
+The React single-page app runs in the browser and is served by a Cloudflare Worker. It calls the FastAPI service using `VITE_API_URL`, and that service gets catalog data from TMDB. Cloudflare's dashboard Git integration deploys the frontend Worker from this repository.
 
 ```mermaid
 flowchart LR
@@ -33,7 +33,7 @@ flowchart LR
   GitHub[GitHub repository] -->|Git integration| Worker
 ```
 
-The frontend supports direct links to movie and TV detail pages. The Worker serves the app shell for those routes so the client router can load the matching page; unknown routes return an HTTP 404 with the app shell.
+Movie and TV detail pages support direct links. For those routes, the Worker serves the app shell and the client router loads the matching page. Unknown routes return an HTTP 404 with the app shell.
 
 ## Run locally
 
@@ -45,8 +45,8 @@ pnpm dev
 ```
 
 Set `VITE_API_URL` to `https://flickpicks.fastapicloud.dev/` and `VITE_WATCH_BASE_URL` to the HTTPS
-base URL for movie and TV watch pages (for example, `https://7movies.ac`). These values are read at build time. Available
-checks and build commands:
+base URL for movie and TV watch pages, such as `https://7movies.ac`. The app reads these values at build time. Run the
+checks and build commands with:
 
 ```bash
 pnpm lint
@@ -58,7 +58,7 @@ pnpm preview
 
 ## Deployment and routing
 
-Production deploys through the Cloudflare dashboard Git integration for the `flickpick` Worker. `wrangler.jsonc` configures the Worker name, the `./dist` build output, and single-page-app asset handling. CI is planned separately and does not deploy the application.
+The `flickpick` Worker deploys through Cloudflare's dashboard Git integration. `wrangler.jsonc` sets the Worker name, the `./dist` build output, and single-page-app asset handling. CI is planned separately and does not deploy the application.
 
 | Path | HTTP status | Response |
 | --- | --- | --- |
