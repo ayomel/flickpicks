@@ -4,6 +4,7 @@ import FeatureMovieHero from '../components/FeatureMovieHero/FeatureMovieHero'
 import { ComingSoonRow } from '@/components/Row/ComingSoonRow'
 import { TrendingRows } from '@/components/Row/TrendingRows'
 import { WatchlistRow } from '@/components/Watchlist/WatchlistRow'
+import { MovieNightPicker } from '@/components/Watchlist/MovieNightPicker'
 import { Seo } from '@/components/Seo'
 import { useTrendingQuery } from '@/hooks/useTrendingQuery'
 import { useUpcomingQuery } from '@/hooks/useUpcomingQuery'
@@ -44,9 +45,12 @@ export const Home = () => {
       />
       <FeatureMovieHero />
       <div className="relative z-10 pb-8 sm:pb-16">
-        <TrendingRows />
+        <div id="browse">
+          <TrendingRows />
+        </div>
         <ComingSoonRow />
         <div id="watchlist" className="scroll-mt-20">
+          <MovieNightPicker />
           <WatchlistRow />
         </div>
       </div>
