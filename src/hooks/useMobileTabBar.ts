@@ -96,5 +96,6 @@ export const useMobileTabBar = () => {
     shellRef,
     toggleSearch,
     watchlistActive,
+    closeSearch,
   }
 }

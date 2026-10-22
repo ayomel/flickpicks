@@ -11,6 +11,7 @@ type SearchInputProps = {
   isExpanded: boolean
   activeOptionId?: string
   inputRef?: RefObject<HTMLInputElement | null>
+  autoFocus?: boolean
 }
 
 export const SearchInput = ({
@@ -22,6 +23,7 @@ export const SearchInput = ({
   isExpanded,
   activeOptionId,
   inputRef,
+  autoFocus = false,
 }: SearchInputProps) => {
   return (
     <div className="relative w-full">
@@ -31,6 +33,7 @@ export const SearchInput = ({
       />
       <input
         ref={inputRef}
+        autoFocus={autoFocus}
         type="search"
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -39,6 +42,7 @@ export const SearchInput = ({
         placeholder="Search movies & TV…"
         autoComplete="off"
         role="combobox"
+        aria-label="Search movies and TV"
         aria-expanded={isExpanded}
         aria-controls={listboxId}
         aria-autocomplete="list"

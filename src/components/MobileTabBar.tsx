@@ -1,5 +1,6 @@
-import { Bookmark, Home, Search } from 'lucide-react'
+import { Bookmark, Home, Search, X } from 'lucide-react'
 import { MovieSearch } from '@/components/Search/MovieSearch'
+import { Button } from '@/components/ui/button'
 import { useMobileTabBar } from '@/hooks/useMobileTabBar'
 import { cn } from '@/lib/utils'
 
@@ -14,6 +15,7 @@ const tabClass = (active: boolean) =>
 export const MobileTabBar = () => {
   const {
     homeActive,
+    closeSearch,
     goHome,
     goWatchlist,
     searchButtonRef,
@@ -33,10 +35,31 @@ export const MobileTabBar = () => {
         <div
           id={searchPanelId}
           role="dialog"
-          aria-label="Search movies"
-          className="pointer-events-auto border-t border-border/80 bg-background/96 px-4 py-3 backdrop-blur-md"
+          aria-labelledby={`${searchPanelId}-heading`}
+          className={cn(
+            'pointer-events-auto fixed inset-x-0 top-14 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-[60]',
+            'flex min-h-0 flex-col gap-3 border-y border-border/80 bg-background px-4 py-3 shadow-xl',
+            'sm:hidden',
+          )}
         >
-          <MovieSearch />
+          <div className="flex shrink-0 items-center justify-between gap-3">
+            <h2
+              id={`${searchPanelId}-heading`}
+              className="m-0 text-base font-semibold text-foreground"
+            >
+              Search movies &amp; TV
+            </h2>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label="Close search"
+              onPress={() => closeSearch(true)}
+            >
+              <X aria-hidden="true" />
+            </Button>
+          </div>
+          <MovieSearch layout="mobile-panel" />
         </div>
       ) : null}
 

@@ -28,4 +28,18 @@ describe('SearchDropdown', () => {
     expect(listbox).toHaveClass('bottom-[calc(100%+6px)]')
     expect(listbox).toHaveClass('max-h-[min(20rem,60svh)]')
   })
+
+  it('fills the mobile search panel and scrolls results in place', () => {
+    render(
+      <SearchDropdown listboxId="list" isOpen placement="inline">
+        Result
+      </SearchDropdown>,
+    )
+
+    const listbox = screen.getByRole('listbox')
+    expect(listbox).toHaveClass('static')
+    expect(listbox).toHaveClass('min-h-0')
+    expect(listbox).toHaveClass('flex-1')
+    expect(listbox).toHaveClass('overscroll-contain')
+  })
 })
