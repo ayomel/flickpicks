@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { apiClient } from '../../../services/apiClient'
 import { WatchlistReviewEditor } from './WatchlistReviewEditor'
@@ -118,6 +119,69 @@ describe('WatchlistReviewEditor', () => {
 
     await act(async () => finishRequest())
     expect(await screen.findByText('Saved')).toBeInTheDocument()
+    client.clear()
+  })
+
+  it('locks the draft while saving and reopens it after a successful save', async () => {
+    const user = userEvent.setup()
+    let finishRequest: (result: { data: WatchlistEntryRead }) => void = () => {}
+    vi.mocked(apiClient.patch).mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          finishRequest = resolve
+        }),
+    )
+    const { client } = renderEditor()
+    const review = screen.getByLabelText('Your review')
+    const clearRating = screen.getByRole('button', { name: 'Clear rating' })
+
+    await user.clear(review)
+    await user.type(review, 'Updated review')
+    await user.click(screen.getByRole('button', { name: 'Save review' }))
+
+    expect(await screen.findByText('Saving your review…')).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: '8 out of 10' })).toBeDisabled()
+    expect(clearRating).toBeDisabled()
+    expect(review).toBeDisabled()
+    expect(review).toHaveValue('Updated review')
+
+    await act(async () => finishRequest({ data: makeEntry() }))
+    expect(await screen.findByText('Saved')).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: '8 out of 10' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Clear rating' })).toBeEnabled()
+    expect(review).toBeEnabled()
+
+    await user.type(review, 'Another edit')
+    expect(screen.getByRole('status')).toHaveTextContent('Unsaved changes')
+    client.clear()
+  })
+
+  it('keeps the draft locked until a failed save settles, then preserves it for retry', async () => {
+    const user = userEvent.setup()
+    let failRequest: (error: Error) => void = () => {}
+    vi.mocked(apiClient.patch).mockImplementation(
+      () =>
+        new Promise((_resolve, reject) => {
+          failRequest = reject
+        }),
+    )
+    const { client } = renderEditor(makeEntry({ rating: null, review: '' }))
+    const review = screen.getByLabelText('Your review')
+
+    await user.type(review, 'Draft to retry')
+    await user.click(screen.getByRole('button', { name: 'Save review' }))
+
+    expect(await screen.findByText('Saving your review…')).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: '1 out of 10' })).toBeDisabled()
+    expect(review).toBeDisabled()
+    await act(async () => failRequest(new Error('Unavailable')))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Couldn’t save your review. Try again.',
+    )
+    expect(review).toBeEnabled()
+    expect(review).toHaveValue('Draft to retry')
+    expect(screen.getByRole('radio', { name: '1 out of 10' })).toBeEnabled()
     client.clear()
   })
 
