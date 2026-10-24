@@ -137,7 +137,10 @@ export const WatchlistReviewEditor = ({
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
       {journalContext}
-      <fieldset className="m-0 min-w-0 border-0 p-0">
+      <fieldset
+        disabled={mutation.isPending}
+        className="m-0 min-w-0 border-0 p-0"
+      >
         <legend className="mb-2 text-sm font-medium">Your rating</legend>
         <div
           role="radiogroup"
@@ -220,6 +223,7 @@ export const WatchlistReviewEditor = ({
         <textarea
           id={`review-${entry.id}`}
           value={review}
+          disabled={mutation.isPending}
           onChange={(event) => {
             setReview(event.target.value)
             setSaveStatus('unsaved')

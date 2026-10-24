@@ -91,6 +91,18 @@ export const useMediaRowNavigation = ({
 
   const onListKeyDown = useCallback(
     (event: KeyboardEvent<HTMLUListElement>) => {
+      const target = event.target
+      if (
+        event.defaultPrevented ||
+        !(target instanceof Node) ||
+        !event.currentTarget.contains(target) ||
+        (target instanceof HTMLElement &&
+          (target.isContentEditable ||
+            target.matches('input, textarea, select')))
+      ) {
+        return
+      }
+
       if (event.key === 'ArrowRight') {
         event.preventDefault()
         focusItem(activeIndex + 1)
